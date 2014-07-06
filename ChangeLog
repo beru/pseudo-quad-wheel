@@ -1,0 +1,19 @@
+	* 0.5	
+	print stack trace after die bugfix
+	setjmp, longjmp stack bugfix
+
+	* 0.4
+	multithread safe bugfix
+	print stack trace after die
+
+	* 0.3
+	require returns not exports but mobule.exports
+	lexer bugfix hex 0xXXX, floating eg 1e-6.
+
+	* 0.2
+	add partial codename and linenumber support
+	add typeof
+
+	* 0.1
+	change regexpr library
+	

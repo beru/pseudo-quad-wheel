@@ -1,0 +1,5 @@
+k={};
+ch=10;
+a = k[1];
+a = k[ch & 0xf];
+console.log(0x);

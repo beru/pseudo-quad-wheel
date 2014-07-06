@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3E449EC8-2DA3-4BF3-ADB4-A0AB51825852}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>bluequadwheel</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;ONLY_MSPACES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MinSpace</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;ONLY_MSPACES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\code.h" />
+    <ClInclude Include="..\config.h" />
+    <ClInclude Include="..\error.h" />
+    <ClInclude Include="..\eval.h" />
+    <ClInclude Include="..\filesys.ex.h" />
+    <ClInclude Include="..\func.h" />
+    <ClInclude Include="..\lexer.h" />
+    <ClInclude Include="..\malloc\dlmalloc.h" />
+    <ClInclude Include="..\memcontext.h" />
+    <ClInclude Include="..\mempool.h" />
+    <ClInclude Include="..\misc.h" />
+    <ClInclude Include="..\number.h" />
+    <ClInclude Include="..\parser.h" />
+    <ClInclude Include="..\proto.array.h" />
+    <ClInclude Include="..\proto.h" />
+    <ClInclude Include="..\proto.number.h" />
+    <ClInclude Include="..\proto.string.h" />
+    <ClInclude Include="..\pstate.h" />
+    <ClInclude Include="..\rbtree.h" />
+    <ClInclude Include="..\regexp.h" />
+    <ClInclude Include="..\scope.h" />
+    <ClInclude Include="..\unichar.h" />
+    <ClInclude Include="..\uregex.h" />
+    <ClInclude Include="..\utils.h" />
+    <ClInclude Include="..\value.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\api.c" />
+    <ClCompile Include="..\code.c" />
+    <ClCompile Include="..\eval.c" />
+    <ClCompile Include="..\filesys.ex.c" />
+    <ClCompile Include="..\func.c" />
+    <ClCompile Include="..\lexer.c" />
+    <ClCompile Include="..\load.ex.c" />
+    <ClCompile Include="..\main.c" />
+    <ClCompile Include="..\malloc\dlmalloc.c" />
+    <ClCompile Include="..\mempool.c" />
+    <ClCompile Include="..\misc.c" />
+    <ClCompile Include="..\number.c" />
+    <ClCompile Include="..\parser.c" />
+    <ClCompile Include="..\proto.array.c" />
+    <ClCompile Include="..\proto.c" />
+    <ClCompile Include="..\proto.global.c" />
+    <ClCompile Include="..\proto.number.c" />
+    <ClCompile Include="..\proto.string.c" />
+    <ClCompile Include="..\pstate.c" />
+    <ClCompile Include="..\rbtree.c" />
+    <ClCompile Include="..\regexp.c" />
+    <ClCompile Include="..\regex_ecma.c" />
+    <ClCompile Include="..\scope.c" />
+    <ClCompile Include="..\unichar.c" />
+    <ClCompile Include="..\utils.c" />
+    <ClCompile Include="..\value.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
