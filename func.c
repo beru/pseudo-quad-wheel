@@ -10,57 +10,52 @@
 #include "unichar.h"
 #include "pstate.h"
 
-Func *
-func_make_static (PSTATE * ps, strs * args, strs * localvar,
-		  struct OpCodes *ops)
+Func*
+func_make_static (PSTATE* ps, strs* args, strs* localvar, struct OpCodes* ops)
 {
-  Func *f = psmalloc (sizeof (Func));
-  memset (f, 0, sizeof (Func));
-  f->type = FC_NORMAL;
-  f->exec.opcodes = ops;
-  f->argnames = args;
-  f->localnames = localvar;
-  return f;
+	Func* f = psmalloc (sizeof (Func));
+	memset (f, 0, sizeof (Func));
+	f->type = FC_NORMAL;
+	f->exec.opcodes = ops;
+	f->argnames = args;
+	f->localnames = localvar;
+	return f;
 }
 
 void
-func_init_localvar (PSTATE * ps, Value * arguments, Func * who)
+func_init_localvar (PSTATE* ps, Value* arguments, Func* who)
 {
-  if (who->localnames)
-    {
-      int i;
-      for (i = 0; i < who->localnames->count; ++i)
-	{
-	  const unichar *argkey = strs_get (ps, who->localnames, i);
-	  if (argkey)
-	    {
-	      ObjKey *strkey = objkey_new (ps, argkey, OM_DONTEMU);
-	      value_object_insert (ps, arguments, strkey, value_new (ps));
-	    }
+	if (who->localnames) {
+		for (int i = 0; i < who->localnames->count; ++i) {
+			const unichar* argkey = strs_get (ps, who->localnames, i);
+			if (argkey) {
+				ObjKey* strkey = objkey_new (ps, argkey, OM_DONTEMU);
+				value_object_insert (ps, arguments, strkey, value_new (ps));
+			}
+		}
 	}
-    }
 }
 
-static FuncObj *
-func_make_internal (PSTATE * ps, SSFunc callback)
+static FuncObj*
+func_make_internal (PSTATE* ps, SSFunc callback)
 {
-  Func *f = psmalloc (sizeof (Func));
-  memset (f, 0, sizeof (Func));
-  f->type = FC_BUILDIN;
-  f->exec.callback = callback;
-
-  return funcobj_new (ps, f);
+	Func* f = psmalloc (sizeof (Func));
+	memset (f, 0, sizeof (Func));
+	f->type = FC_BUILDIN;
+	f->exec.callback = callback;
+	return funcobj_new (ps, f);
 }
 
-Value *
-func_utils_make_func_value (PSTATE * ps, SSFunc callback)
+Value*
+func_utils_make_func_value (PSTATE* ps, SSFunc callback)
 {
-  Object *o = object_new (ps);
-  Value *v;
-  o->ot = OT_FUNCTION;
-  o->d.fobj = func_make_internal (ps, callback);
+	Object* o = object_new (ps);
+	Value* v;
+	o->ot = OT_FUNCTION;
+	o->d.fobj = func_make_internal (ps, callback);
 
-  v = value_new (ps);
-  value_make_object (*v, o);
-  return v;
+	v = value_new (ps);
+	value_make_object (*v, o);
+	return v;
 }
+

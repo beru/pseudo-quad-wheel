@@ -15,16 +15,16 @@
 #include "memcontext.h"
 
 struct execctx {
-	Value *Object_prototype;
-	Value *Function_prototype_prototype;
-	Value *Function_prototype;
-	Value *String_prototype;
-	Value *Number_prototype;
-	Value *Boolean_prototype;
-	Value *Array_prototype;
-	Value *RegExp_prototype;
-	Value *Top_object;
-	Value *File_prototype;
+	Value* Object_prototype;
+	Value* Function_prototype_prototype;
+	Value* Function_prototype;
+	Value* String_prototype;
+	Value* Number_prototype;
+	Value* Boolean_prototype;
+	Value* Array_prototype;
+	Value* RegExp_prototype;
+	Value* Top_object;
+	Value* File_prototype;
 
 	/* stacks */
 	Value stack[65536];
@@ -35,8 +35,8 @@ struct execctx {
 	int sp;
 
 	struct {
-		OpCodes *opcodes;
-		OpCode *ip;
+		OpCodes* opcodes;
+		OpCode* ip;
 	} callstack[1024];
 	int callstacksp;
 
@@ -49,21 +49,20 @@ struct execctx {
 typedef struct PSTATE {
 	int err_count;				/* error count after parse */
 	int eval_flag;				/* currently execute in eval function */
- 	struct OpCodes *opcodes;	/* opcodes result(parsing result) */
-	struct Lexer *lexer;		/* seq provider */
+ 	struct OpCodes* opcodes;	/* opcodes result(parsing result) */
+	struct Lexer* lexer;		/* seq provider */
 
 	int _context_id;			/* used in FastVar-locating */
 	Value last_exception;		/* exception */
 
-  struct execctx ec; /* execution context */
+	struct execctx ec; /* execution context */
 
-  char buf[1024];
+	char buf[1024];
 } PSTATE;
 
-PSTATE *pstate_new_from_file(FILE *fp, struct memcontext *memcontext, char *);
-PSTATE *pstate_new_from_string(const char *str, struct memcontext *memcontext, char *);
-void pstate_free(PSTATE *ps);
-
+PSTATE* pstate_new_from_file(FILE* fp, struct memcontext* memcontext, char*);
+PSTATE* pstate_new_from_string(const char* str, struct memcontext* memcontext, char*);
+void pstate_free(PSTATE* ps);
 
 #define Object_prototype ps->ec.Object_prototype
 #define Function_prototype_prototype ps->ec.Function_prototype_prototype
@@ -92,10 +91,10 @@ void pstate_free(PSTATE *ps);
 #endif
 #endif
 
-void pstate_svc(void *ps, int i, char *s);
+void pstate_svc(void* ps, int i, char* s);
+char* pstate_getbuf(void* p);
 
-void *_psdxmalloc (void *ps, int size);
-void _psdxfree (void *ps, void *p);
-
+void* _psdxmalloc (void* ps, int size);
+void _psdxfree (void* ps, void *p);
 
 #endif

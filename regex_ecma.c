@@ -2637,8 +2637,10 @@ regfree_u (regex_t * preg)
 {
 }
 
-void reg_init(void *(*localmalloc)(void *c, int size),
-		  void (*localfree)(void *c, void *p))
+void reg_init(
+	void *(*localmalloc)(void *c, int size),
+	void (*localfree)(void *c, void *p)
+	)
 {
   _localmalloc = localmalloc;
   _localfree = localfree;

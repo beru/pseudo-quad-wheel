@@ -86,23 +86,23 @@ typedef enum {		/* SC 	type of data	comment 							*/
 #define RES_CONTINUE	1
 #define RES_BREAK		2
 
-extern const char *op_names[OP_LASTOP];
+extern const char* op_names[OP_LASTOP];
 
 typedef struct {
 	Eopcode op;
-	void *data;
-	char *codename;
+	void* data;
+	char* codename;
 	int lineno;
 } OpCode;
 
 typedef struct OpCodes {
-	OpCode *codes;
+	OpCode* codes;
 	int code_len;
 	int code_size;
 	
 	int expr_counter;			/* context related expr count */
 	int lvalue_flag;			/* left value count/flag */
-	const unichar *lvalue_name;	/* left value name */
+	const unichar* lvalue_name;	/* left value name */
 } OpCodes;
 
 struct Func;
@@ -111,8 +111,8 @@ struct Value;
 typedef struct FastVar {
 	int context_id;
 	struct {
-		unichar *varname;
-		struct Value *lval;
+		unichar* varname;
+		struct Value* lval;
 	} var;
 } FastVar;
 
@@ -124,7 +124,7 @@ typedef struct TryInfo {
 
 typedef struct ReservedInfo {
 	int type;
-	const unichar *label;
+	const unichar* label;
 	int topop;
 } ReservedInfo;
 
@@ -138,18 +138,18 @@ struct PSTATE;
 
 
 OpCodes *code_push_undef(struct PSTATE*);
-OpCodes *code_push_bool(struct PSTATE*,int v);
-OpCodes *code_push_num(struct PSTATE*,double *v);
-OpCodes *code_push_string(struct PSTATE*,const unichar *str);
-OpCodes *code_push_index(struct PSTATE*,unichar *varname);
+OpCodes *code_push_bool(struct PSTATE*, int v);
+OpCodes *code_push_num(struct PSTATE*, double* v);
+OpCodes *code_push_string(struct PSTATE*, const unichar* str);
+OpCodes *code_push_index(struct PSTATE*, unichar* varname);
 OpCodes *code_push_args(struct PSTATE*);
 OpCodes *code_push_this(struct PSTATE*);
-OpCodes *code_push_func(struct PSTATE*,struct Func *fun);
-OpCodes *code_push_regex(struct PSTATE*,regex_t *reg);
+OpCodes *code_push_func(struct PSTATE*, struct Func* fun);
+OpCodes *code_push_regex(struct PSTATE*, regex_t* reg);
 OpCodes *code_push_top(struct PSTATE*);
 OpCodes *code_push_top2(struct PSTATE*);
 OpCodes *code_unref(struct PSTATE*);
-OpCodes *code_local(struct PSTATE*,const unichar *varname);
+OpCodes *code_local(struct PSTATE*, const unichar* varname);
 
 OpCodes *code_nop(struct PSTATE*);
 OpCodes *code_neg(struct PSTATE*);
@@ -172,49 +172,49 @@ OpCodes *code_nneq(struct PSTATE*);
 OpCodes *code_band(struct PSTATE*);
 OpCodes *code_bor(struct PSTATE*);
 OpCodes *code_bxor(struct PSTATE*);
-OpCodes *code_shf(struct PSTATE*,int right);
+OpCodes *code_shf(struct PSTATE*, int right);
 
-OpCodes *code_assign(struct PSTATE*,int h);
-OpCodes *code_subscript(struct PSTATE*,int right_val);
-OpCodes *code_inc(struct PSTATE*,int e);
-OpCodes *code_dec(struct PSTATE*,int e);
+OpCodes *code_assign(struct PSTATE*, int h);
+OpCodes *code_subscript(struct PSTATE*, int right_val);
+OpCodes *code_inc(struct PSTATE*, int e);
+OpCodes *code_dec(struct PSTATE*, int e);
 
-OpCodes *code_fcall(struct PSTATE*,int argc);
-OpCodes *code_newfcall(struct PSTATE*,int argc);
-OpCodes *code_pop(struct PSTATE*,int n);
-OpCodes *code_ret(struct PSTATE*,int n);
-OpCodes *code_object(struct PSTATE*,int c);
-OpCodes *code_array(struct PSTATE*,int c);
+OpCodes *code_fcall(struct PSTATE*, int argc);
+OpCodes *code_newfcall(struct PSTATE*, int argc);
+OpCodes *code_pop(struct PSTATE*, int n);
+OpCodes *code_ret(struct PSTATE*, int n);
+OpCodes *code_object(struct PSTATE*, int c);
+OpCodes *code_array(struct PSTATE*, int c);
 OpCodes *code_key(struct PSTATE*);
 OpCodes *code_next(struct PSTATE*);
-OpCodes *code_delete(struct PSTATE*,int n);
-OpCodes *code_chthis(struct PSTATE*,int n);
+OpCodes *code_delete(struct PSTATE*, int n);
+OpCodes *code_chthis(struct PSTATE*, int n);
 
-OpCodes *code_jfalse(struct PSTATE*,int off);
-OpCodes *code_jtrue(struct PSTATE*,int off);
-OpCodes *code_jfalse_np(struct PSTATE*,int off);
-OpCodes *code_jtrue_np(struct PSTATE*,int off);
-OpCodes *code_jmp(struct PSTATE*,int off);
-OpCodes *code_eval(struct PSTATE*,int argc);
+OpCodes *code_jfalse(struct PSTATE*, int off);
+OpCodes *code_jtrue(struct PSTATE*, int off);
+OpCodes *code_jfalse_np(struct PSTATE*, int off);
+OpCodes *code_jtrue_np(struct PSTATE*, int off);
+OpCodes *code_jmp(struct PSTATE*, int off);
+OpCodes *code_eval(struct PSTATE*, int argc);
 
 OpCodes *code_throw(struct PSTATE*);
-OpCodes *code_stry(struct PSTATE*,int trylen, int catchlen, int finlen);
+OpCodes *code_stry(struct PSTATE*, int trylen, int catchlen, int finlen);
 OpCodes *code_etry(struct PSTATE*);
-OpCodes *code_scatch(struct PSTATE*,const unichar *var);
+OpCodes *code_scatch(struct PSTATE*, const unichar* var);
 OpCodes *code_ecatch(struct PSTATE*);
 OpCodes *code_sfinal(struct PSTATE*);
 OpCodes *code_efinal(struct PSTATE*);
 OpCodes *code_throw(struct PSTATE*);
-OpCodes *code_with(struct PSTATE*,int withlen);
+OpCodes *code_with(struct PSTATE*, int withlen);
 OpCodes *code_ewith(struct PSTATE*);
 OpCodes *code_typeof(struct PSTATE*);
 
 OpCodes *code_debug(struct PSTATE*);
-OpCodes *code_reserved(struct PSTATE*,int type, unichar *id);
+OpCodes *code_reserved(struct PSTATE*, int type, unichar* id);
 
-OpCodes *codes_join(struct PSTATE*,OpCodes *a, OpCodes *b);
-OpCodes *codes_join3(struct PSTATE*,OpCodes *a, OpCodes *b, OpCodes *c);
-OpCodes *codes_join4(struct PSTATE*,OpCodes *a, OpCodes *b, OpCodes *c, OpCodes *d);
+OpCodes *codes_join(struct PSTATE*, OpCodes* a, OpCodes* b);
+OpCodes *codes_join3(struct PSTATE*, OpCodes* a, OpCodes* b, OpCodes* c);
+OpCodes *codes_join4(struct PSTATE*, OpCodes* a, OpCodes* b, OpCodes* c, OpCodes* d);
 
 /* replace continue/break(coded as OP_RESERVED) jmp
  * |------------------| \
@@ -231,11 +231,11 @@ OpCodes *codes_join4(struct PSTATE*,OpCodes *a, OpCodes *b, OpCodes *c, OpCodes 
  * 3. topop, if not replace in current iter statment, make sure when jmp out of this loop/switch
  *	  corrent stack elems poped(for in always has 2 elem, while switch has 1)
  */
-void code_reserved_replace(struct PSTATE*,OpCodes *ops, int step_len, int break_only,
-						   const unichar *desire_label, int topop);
+void code_reserved_replace(struct PSTATE*, OpCodes* ops, int step_len, int break_only, const unichar* desire_label, int topop);
 
-void code_decode(struct PSTATE*,OpCode *op, int currentip);
-void codes_print(struct PSTATE*,OpCodes *ops);
-OpCodes *codes_new(struct PSTATE*,int size);
-void codes_free(struct PSTATE *,OpCodes *ops);
+void code_decode(struct PSTATE*, OpCode* op, int currentip);
+void codes_print(struct PSTATE*, OpCodes* ops);
+OpCodes *codes_new(struct PSTATE*, int size);
+void codes_free(struct PSTATE*, OpCodes* ops);
+
 #endif

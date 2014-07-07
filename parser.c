@@ -122,7 +122,7 @@ ForinVar *forinvar_new(PSTATE*ps,unichar *varname, OpCodes *local, OpCodes *lval
 
 static OpCodes *make_forin(PSTATE*ps,OpCodes *lval, OpCodes *expr, OpCodes *stat, const unichar *label)
 {
-  OpCodes *init = codes_join(ps,expr, code_key(ps));
+	OpCodes *init = codes_join(ps,expr, code_key(ps));
 	OpCodes *cond = codes_join3(ps,lval, code_next(ps),
 				    code_jfalse(ps,stat->code_len + 2));
 	OpCodes *stat_jmp = code_jmp(ps, -(cond->code_len + stat->code_len));
@@ -139,7 +139,7 @@ typedef struct CaseExprStat {
 
 CaseExprStat *exprstat_new(PSTATE*ps,OpCodes *expr, OpCodes *stat, int isdef)
 {
-  CaseExprStat *r = psmalloc(sizeof(CaseExprStat));
+	CaseExprStat *r = psmalloc(sizeof(CaseExprStat));
 	r->expr = expr;
 	r->stat = stat;
 	r->isdefault = isdef;
@@ -155,7 +155,7 @@ typedef struct CaseList {
 
 static CaseList *caselist_new(PSTATE*ps,CaseExprStat *es)
 {
-  CaseList *a = psmalloc(sizeof(CaseList));
+	CaseList *a = psmalloc(sizeof(CaseList));
 	memset(a, 0, sizeof(CaseList));
 	a->es = es;
 	a->tail = a;
@@ -176,13 +176,9 @@ static OpCodes *opassign(PSTATE*ps,OpCodes *lval, OpCodes *oprand, OpCodes *op)
 {
 	OpCodes *ret;
 	if (((OpCodes *)lval)->lvalue_flag == 1) {
-		ret = codes_join3(ps,lval, 
-							 codes_join3(ps,code_push_top(ps), oprand, op),
-				  code_assign(ps,1));
+		ret = codes_join3(ps,lval, codes_join3(ps,code_push_top(ps), oprand, op), code_assign(ps,1));
 	} else {
-		ret = codes_join3(ps,lval,
-				  codes_join4(ps,code_push_top2(ps), code_subscript(ps,1), oprand, op),
-				  code_assign(ps,2));
+		ret = codes_join3(ps,lval, codes_join4(ps,code_push_top2(ps), code_subscript(ps,1), oprand, op), code_assign(ps,2));
 	}
 	return ret;
 }

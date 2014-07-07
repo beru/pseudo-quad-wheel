@@ -69,9 +69,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;ONLY_MSPACES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -88,7 +92,6 @@
     <ClInclude Include="..\filesys.ex.h" />
     <ClInclude Include="..\func.h" />
     <ClInclude Include="..\lexer.h" />
-    <ClInclude Include="..\malloc\dlmalloc.h" />
     <ClInclude Include="..\memcontext.h" />
     <ClInclude Include="..\mempool.h" />
     <ClInclude Include="..\misc.h" />
@@ -116,7 +119,6 @@
     <ClCompile Include="..\lexer.c" />
     <ClCompile Include="..\load.ex.c" />
     <ClCompile Include="..\main.c" />
-    <ClCompile Include="..\malloc\dlmalloc.c" />
     <ClCompile Include="..\mempool.c" />
     <ClCompile Include="..\misc.c" />
     <ClCompile Include="..\number.c" />

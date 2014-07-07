@@ -13,24 +13,23 @@ typedef struct Lexer {
 		LT_STRING			/* read from a string */
 	} ltype;
 	union {
-		FILE *fp;			/* LT_FILE, where to read */
-		const char *str;	/* LT_STRING */
+		FILE* fp;			/* LT_FILE, where to read */
+		const char* str;	/* LT_STRING */
 	} d;
 	int last_token;			/* last token returned */
 	int cur;				/* LT_STRING, current char */
 	int cur_line;			/* current line no. */
 	int cur_char;			/* current column no. */
 
-  PSTATE *pstate;
-  struct {
-    strs *scopes[MAX_SCOPE];
-    int cur_scope;
-  } lc;
-	char *codename;
+	PSTATE* pstate;
+	struct {
+		strs* scopes[MAX_SCOPE];
+		int cur_scope;
+	} lc;
+	char* codename;
 } Lexer;
 
-int yylex (YYSTYPE *yylvalp, YYLTYPE *yyllocp, PSTATE *pstate);
-void yyerror(YYLTYPE *yylloc, PSTATE *ps, const char *msg);
+int yylex (YYSTYPE* yylvalp, YYLTYPE* yyllocp, PSTATE* pstate);
+void yyerror(YYLTYPE* yylloc, PSTATE* ps, const char* msg);
 
 #endif
-

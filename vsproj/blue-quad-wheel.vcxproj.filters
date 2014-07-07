@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="malloc">
-      <UniqueIdentifier>{cc92fbf8-49fd-45b1-b3d1-790b13ff2c5e}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\proto.array.h">
@@ -89,9 +86,6 @@
     </ClInclude>
     <ClInclude Include="..\parser.h">
       <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\malloc\dlmalloc.h">
-      <Filter>malloc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -169,9 +163,6 @@
     </ClCompile>
     <ClCompile Include="..\value.c">
       <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\malloc\dlmalloc.c">
-      <Filter>malloc</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

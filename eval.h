@@ -15,11 +15,11 @@ struct PSTATE;
  * 5. _this, where 'this' indicated
  * 6. vret, return value
  */
-int eval(struct PSTATE *ps, OpCodes *opcodes, 
-		 struct ScopeChain *scope, struct Value *currentScope,
-		 struct Value *_this,
-		 struct Value *vret);
+int eval(struct PSTATE* ps, OpCodes* opcodes, 
+		 struct ScopeChain* scope, struct Value* currentScope,
+		 struct Value* _this,
+		 struct Value* vret);
 		 
-void eval_print(struct PSTATE *ps);
+void eval_print(struct PSTATE* ps);
 
 #endif

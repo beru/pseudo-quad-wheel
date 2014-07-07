@@ -4,6 +4,6 @@
 struct Value;
 
 /* String.prototype */
-void proto_string_init(PSTATE*ps,Value *global);
+void proto_string_init(PSTATE* ps,Value* global);
 
 #endif

@@ -4,15 +4,15 @@
 #include "unichar.h"
 
 typedef struct strs {
-	unichar **strings;
+	unichar** strings;
 	int count;
 	int _size;
 } strs;
 
-strs *strs_new(void*ec);
-void strs_push(void*ec,strs *ss, const unichar *string);
-void strs_free(void*ec,strs *ss);
-const unichar *strs_get(void*ec,strs *ss, int i);
+strs* strs_new(void* ec);
+void strs_push(void* ec, strs* ss, const unichar* string);
+void strs_free(void* ec,strs* ss);
+const unichar* strs_get(void* ec, strs* ss, int i);
 
 /* what lexical scope means:
  * --------------
@@ -28,9 +28,9 @@ const unichar *strs_get(void*ec,strs *ss, int i);
 #define MAX_SCOPE	4096
 
 struct Lexer;
-void scope_push(struct Lexer *lexer);
-void scope_pop(struct Lexer *lexer);
-void scope_add_var(struct Lexer *lexer, const unichar *str);
-strs *scope_get_varlist(struct Lexer *lexer);
+void scope_push(struct Lexer* lexer);
+void scope_pop(struct Lexer* lexer);
+void scope_add_var(struct Lexer* lexer, const unichar* str);
+strs* scope_get_varlist(struct Lexer* lexer);
 
 #endif

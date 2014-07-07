@@ -7,14 +7,13 @@
 #include "uregex.h"
 #include "unichar.h"
 
-regex_t *regex_u_new(void*ec,const unsigned short *str, int len, int compflag);
+regex_t* regex_u_new(void* ec, const unsigned short* str, int len, int compflag);
 
 #else
-#include "regex.h"
+#include "uregex.h"
 #include "unichar.h"
 
-regex_t *regex_new(const char *str, int compflag);
+regex_t* regex_new(void* ec, const char* str, int compflag);
 #endif
 
 #endif
-

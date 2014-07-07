@@ -9,25 +9,21 @@
 
 #if USE_DLMALLOC
 #include "malloc/dlmalloc.h"
-#endif	/*  */
-void *
-mc_malloc (void *mc, unsigned int size) 
+#endif	//
+
+void*
+mc_malloc (void* mc, unsigned int size) 
 {
 #if USE_DLMALLOC
-  struct memcontext *ctx = mc;
-    if (ctx->mymspace)
-    {
-      return (void *)mspace_malloc (ctx->mymspace, size);
-    }
-  else
-    {
-      return malloc (size);
-    }
-  
-#else	/*  */
+  struct memcontext* ctx = mc;
+  if (ctx->mymspace) {
+    return (void *)mspace_malloc (ctx->mymspace, size);
+  }else {
     return malloc (size);
-  
-#endif	/*  */
+  }
+#else	// #if USE_DLMALLOC
+  return malloc (size);
+#endif	// #if USE_DLMALLOC
 }
 
 
@@ -36,23 +32,16 @@ mc_free (void *mc, void *p)
 {
   
 #if USE_DLMALLOC
-  struct memcontext *ctx = mc;
-    if (ctx->mymspace)
-    {
-      mspace_free (ctx->mymspace, p);
-    }
-  else
-    {
-      free(p);
-    }
-  
-#else	/*  */
+  struct memcontext* ctx = mc;
+  if (ctx->mymspace) {
+    mspace_free (ctx->mymspace, p);
+  }else {
     free(p);
-#endif	/*  */
+  }
+#else	// #if USE_DLMALLOC
+    free(p);
+#endif	// #if USE_DLMALLOC
 }
-
-
-
  
 #ifndef DONT_USE_POOL
 static void 
@@ -67,11 +56,11 @@ pool_extern (mpool_t mp)
    if (!mb)
     xdie ("Out of memory\n");
    
-    /* push to block head */ 
+    // push to block head
     mb->next = mp->blockhead;
   mp->blockhead = mb;
-  p = (char *) mb;		/* raw byte proccess */
-  p += (int) sizeof (Memblock);	/* p pointed to (Memnode+elesize) * BLOCKSIZE */
+  p = (char *) mb;		// raw byte proccess
+  p += (int) sizeof (Memblock);	// p pointed to (Memnode+elesize) * BLOCKSIZE
   for (i = 0; i < MP_BLOCK_SIZE; ++i)
     
     {
@@ -84,9 +73,9 @@ pool_extern (mpool_t mp)
 }
 
   
-#endif	/*  */
+#endif	// #ifndef DONT_USE_POOL
 
-mpool_t mpool_create (struct memcontext *mc, unsigned int elemsize) 
+mpool_t mpool_create (struct memcontext *mc, unsigned int elemsize)
 {
   mpool_t mp = mc_malloc (mc, sizeof (struct Mempool));
   if (!mp)
@@ -99,7 +88,7 @@ mpool_t mpool_create (struct memcontext *mc, unsigned int elemsize)
    
 #ifndef DONT_USE_POOL
     pool_extern (mp);
-#endif	/*  */
+#endif	//
     return mp;
 }
 
@@ -109,16 +98,16 @@ mpool_alloc (mpool_t mp)
    
 #ifndef DONT_USE_POOL
   char *ret;
-  if (!mp->nodehead)		/* running out of cache */
+  if (!mp->nodehead)		// running out of cache
     pool_extern (mp);
   ret = (char *) mp->nodehead;
   mp->nodehead = mp->nodehead->next;
   return (void *) (ret + (int) sizeof (Memnode));
    
-#else	/*  */
+#else	//
     return malloc (mp->elemsize);
    
-#endif	/*  */
+#endif	//
 }
 
  void 
@@ -136,34 +125,34 @@ mpool_free (void *p, mpool_t mp)
   n->next = mp->nodehead;
   mp->nodehead = n;
    
-#else	/*  */
+#else	//
     free (p);
    
-#endif	/*  */
+#endif	//
 }  
 
 #ifndef DONT_USE_POOL
-/* Create pools to replace malloc */ 
+// Create pools to replace malloc */ 
  static const unsigned int gpools_sizes[POOL_COUNT] = 
   { 8, 12, 16, 24, 32, 64, 128, 256 
 };
 
- static const int sizeindexes[129] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0 - 8 */ 
-    1, 1, 1, 1, /* 9 - 12 */ 
-    2, 2, 2, 2, /* 13 - 16 */ 
-    3, 3, 3, 3, 3, 3, 3, 3, /* 17 - 24 */ 
-    4, 4, 4, 4, 4, 4, 4, 4, /* 25 - 32 */ 
+ static const int sizeindexes[129] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0 - 8
+    1, 1, 1, 1, // 9 - 12
+    2, 2, 2, 2, // 13 - 16
+    3, 3, 3, 3, 3, 3, 3, 3, // 17 - 24
+    4, 4, 4, 4, 4, 4, 4, 4, // 25 - 32
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-    5, 5, 5, 5, 5, 5, 5, 5, /* 33 - 64 */ 
+    5, 5, 5, 5, 5, 5, 5, 5, // 33 - 64
     6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
     6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6 /* 65 - 128 */  
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6 // 65 - 128
 };
 
   void **pstate_get_general_pools (void *ps);
  
 #define roundsize(n) (((n)<=128)?sizeindexes[n]:(((n)>256)?-1:7))
-#endif	/*  */
+#endif	//
  void 
 mpool_init (struct memcontext *ctx) 
 {
@@ -181,7 +170,7 @@ mpool_init (struct memcontext *ctx)
 	}
     }
   
-#else	/*  */
+#else	//
 
   if (ctx) {
     int i;
@@ -191,14 +180,14 @@ mpool_init (struct memcontext *ctx)
     }
   }
   
-#endif	/*  */
+#endif	//
 }
 
 void *_ps_memctx_malloc(void *, unsigned int);
 void _ps_memctx_free(void*,void*);
 
  void *
-mm_alloc (void *ec, unsigned int size) /* size_t ... */  
+mm_alloc (void *ec, unsigned int size) // size_t ...
 {
    
 #ifndef DONT_USE_POOL
@@ -212,22 +201,22 @@ mm_alloc (void *ec, unsigned int size) /* size_t ... */
       return mpool_alloc (pools[poolindex]);
     }
    
-    /* block that bigger then 256 bytes, use malloc */ 
-    /* still add a Memnode struct before the allocated memory */ 
+    // block that bigger then 256 bytes, use malloc
+    // still add a Memnode struct before the allocated memory
     n = _ps_memctx_malloc (ps, size + sizeof (Memnode));
   n->esize = size;
   n++;
   return n;
    
-#else	/*  */
+#else	//
     return malloc (size);
   
-#endif	/*  */
+#endif	//
 }
 
 
  void *
- mm_realloc (void *ec, void *p, unsigned int size) /* size_t ... */  
+ mm_realloc (void *ec, void *p, unsigned int size) // size_t ...
 {
    
 #ifndef DONT_USE_POOL
@@ -241,16 +230,13 @@ mm_alloc (void *ec, unsigned int size) /* size_t ... */
     mm_free(ec, p);
   }
   return q;
-#else	/*  */
+#else	//
   return realloc (p, size);
   
-#endif	/*  */
+#endif	//
 }
 
-
-
-
- void 
+void
 mm_free (void *ec, void *p) 
 {
    
@@ -267,11 +253,12 @@ mm_free (void *ec, void *p)
       return;
     }
    
-    /* more then 256 bytes, use free */ 
+    // more then 256 bytes, use free
     _ps_memctx_free (ps, n);
    
-#else	/*  */
+#else	//
     free (p);
    
-#endif	/*  */
+#endif	//
 }   
+

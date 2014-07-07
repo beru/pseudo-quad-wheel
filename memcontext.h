@@ -10,7 +10,10 @@
 #endif
 
 struct memcontext {
-  void *mymspace;
-  void *general_pools[POOL_COUNT];  
+#if USE_DLMALLOC
+	void* mymspace;
+#endif
+	void* general_pools[POOL_COUNT];  
 };
 #endif
+

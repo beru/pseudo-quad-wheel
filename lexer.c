@@ -555,7 +555,8 @@ _yylex (YYSTYPE * yylvalp, YYLTYPE * yyllocp, Lexer * lex)
 	{
 	c = lexer_getchar (lex);
 	if (c == 'x' || c == 'X') {
-		int num = 0; int val;
+		int num = 0;
+ int val;
 		while (wi < 1020) {
 		c = lexer_getchar (lex);
 	    	if (isdigit (c) || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F')) {
@@ -572,7 +573,8 @@ end:;
 	        word[wi] = 0;
 	        unibuf.len = wi;
          	db = psmalloc (sizeof (double));
-        	sscanf (tochars (lex->pstate,word), "%x", &val); 
+        	sscanf (tochars (lex->pstate,word), "%x", &val);
+ 
 		*db = val;
         	*yylvalp = db;
         	return FNUMBER;
@@ -751,8 +753,8 @@ end:;
 	    unifree (lex->pstate,regtxt);
 #else
 	    regtxt = do_regex (lex, &flag);
-	    *yylvalp = regex_new (regtxt, flag);
-	    c_strfree (lex->pstate,regtxt);
+	    *yylvalp = regex_new (lex->pstate, regtxt, flag);
+	    c_strfree (lex->pstate, regtxt);
 #endif
 	    return REGEXP;
 	  }

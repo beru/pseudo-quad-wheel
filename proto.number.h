@@ -4,6 +4,6 @@
 struct Value;
 
 /* Number.prototype */
-void proto_number_init(PSTATE*ps,struct Value *global);
+void proto_number_init(PSTATE* ps, struct Value* global);
 
 #endif

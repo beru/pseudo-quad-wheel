@@ -10,121 +10,129 @@
 #include "proto.h"
 #include "eval.h"
 
-int utils_global_eval (PSTATE * ps, const char *program,
-		       ScopeChain * scope, Value * currentScope,
-		       Value * _this, Value * ret, const char *codename);
+int utils_global_eval (
+	PSTATE* ps,
+	const char* program,
+	ScopeChain* scope,
+	Value* currentScope,
+	Value* _this,
+	Value* ret,
+	const char* codename
+);
 
 #include <sys/stat.h>
 
 
 int
-_utils_global_load (PSTATE * ps, 
-		    const char *fn,
-		    ScopeChain *sc, 
-		    Value * _this, 
-		    Value * ret,
-		    int asc)
+_utils_global_load (
+	PSTATE* ps, 
+	const char* fn,
+	ScopeChain* sc, 
+	Value* _this, 
+	Value* ret,
+	int asc
+	)
 {
-  struct stat st;
-  FILE *fp = fopen (fn, "rb");
-  int r = 0;
-  char *program;
-  if (fp == 0)
-    {
-      return -2;
-    }
-  
-  stat (fn, &st);
-  program = psmalloc (st.st_size + 1);
-  fread (program, 1, st.st_size, fp);
-  fclose (fp);
-
-  program[st.st_size] = 0;
-  r = utils_global_eval (ps, program, sc, _this, _this, ret, fn);
-  psfree (program);
-  return r;
+	FILE* fp = fopen (fn, "rb");
+	if (fp == 0) {
+		return -2;
+	}
+	
+	struct stat st;
+	stat (fn, &st);
+	char* program = psmalloc (st.st_size + 1);
+	fread (program, 1, st.st_size, fp);
+	fclose (fp);
+	
+	program[st.st_size] = 0;
+	int r = utils_global_eval (ps, program, sc, _this, _this, ret, fn);
+	psfree (program);
+	return r;
 }
 
 
 int
-_utils_global_require (PSTATE * ps, 
-		    const char *mn,
-		    ScopeChain *sc, 
-		    Value * _this, 
-		    Value * ret,
-		    int asc)
+_utils_global_require (
+	PSTATE* ps, 
+	const char* mn,
+	ScopeChain* sc, 
+	Value* _this, 
+	Value* ret,
+	int asc
+	)
 {
-  struct stat st;
-  FILE *fp;
-  int r = 0;
-  char *program;
-  char *wrap;
-  char fn[1024];
+	char fn[1024];
+	sprintf(fn, "modules/%s.js", mn);
+	FILE* fp =  fopen (fn, "rb");;
+	if (fp == 0) {
+		return -2;
+	}
+	
+	struct stat st;
+	stat (fn, &st);
+	char* program = psmalloc (st.st_size + 1);
+	fread (program, 1, st.st_size, fp);
+	fclose (fp);
+	program[st.st_size] = 0;
 
-  sprintf(fn, "modules/%s.js", mn);
-  fp =  fopen (fn, "rb");;
-  if (fp == 0)
-    {
-      return -2;
-    }
-  
-  stat (fn, &st);
-  program = psmalloc (st.st_size + 1);
-  fread (program, 1, st.st_size, fp);
-  fclose (fp);
-  program[st.st_size] = 0;
-
-  wrap = psmalloc (st.st_size + 1 + 256);
-  sprintf(wrap, "return (function(){\nvar exports = {};\nvar module = {};\nmodule.exports = exports;\n%s;\nreturn module.exports;\n})();\n", program);
-  r = utils_global_eval (ps, wrap, sc, _this, _this, ret, fn);
-  psfree (program);
-  return r;
+	char* wrap = psmalloc (st.st_size + 1 + 256);
+	sprintf(wrap, "return (function(){\nvar exports = {};\nvar module = {};\nmodule.exports = exports;\n%s;\nreturn module.exports;\n})();\n", program);
+	int r = utils_global_eval (ps, wrap, sc, _this, _this, ret, fn);
+	psfree (program);
+	return r;
 }
 
 int
-utils_global_load (PSTATE * ps, 
-		   Value * args, 
-		   Value * _this, 
-		   Value * ret,
-		   int asc)
+utils_global_load (
+	PSTATE* ps, 
+	Value* args, 
+	Value* _this, 
+	Value* ret,
+	int asc
+	)
 {
-  Value *v = value_object_lookup_array (args, 0, NULL);
-  if (v && is_string (v)) /* nothing */ ;
-  else
-    return -1;
+	Value* v = value_object_lookup_array (args, 0, NULL);
+	if (v && is_string (v)) {
+		// nothing
+		;
+	}else {
+		return -1;
+	}
 
-  {
-    int r;
-    const char *fn = tochars (ps, v->d.str);
-    ScopeChain *gsc;
-    gsc = scope_chain_new (ps, 0);
-    r = _utils_global_load (ps, fn, gsc, _this, ret, 0);
-    scope_chain_free (ps, gsc);
-    return r;
-  }
+	{
+		const char* fn = tochars (ps, v->d.str);
+		ScopeChain* gsc = scope_chain_new (ps, 0);
+		int r = _utils_global_load (ps, fn, gsc, _this, ret, 0);
+		scope_chain_free (ps, gsc);
+		return r;
+	}
 }
 
 
 int
-utils_global_require (PSTATE * ps, 
-		      Value * args, 
-		      Value * _this, 
-		      Value * ret,
-		      int asc)
+utils_global_require (
+	PSTATE* ps,
+	Value* args,
+	Value* _this,
+	Value* ret,
+	int asc
+	)
 {
-  Value *v = value_object_lookup_array (args, 0, NULL);
-  if (v && is_string (v)) /* nothing */ ;
-  else
-    return -1;
-  {
-    int r;
-    const char *mn = tochars (ps, v->d.str);
-    ScopeChain *gsc;
-    gsc = scope_chain_new (ps, 0);
-    r = _utils_global_require (ps, mn, gsc, _this, ret, 0);
-    scope_chain_free (ps, gsc);
-    return r;
-  }
+	Value* v = value_object_lookup_array (args, 0, NULL);
+	if (v && is_string (v)) {
+		// nothing
+		;
+	}else {
+		return -1;
+	}
+
+	{
+		const char *mn = tochars (ps, v->d.str);
+		ScopeChain* gsc = scope_chain_new (ps, 0);
+		int r = _utils_global_require (ps, mn, gsc, _this, ret, 0);
+		scope_chain_free (ps, gsc);
+		return r;
+	}
 }
 
 
@@ -132,19 +140,11 @@ utils_global_require (PSTATE * ps,
 
 #if GLOBAL_LOAD
 void
-load_ex_init (PSTATE * ps, Value * global)
+load_ex_init (PSTATE* ps, Value* global)
 {
-  value_object_utils_insert (ps, global, tounichars (ps,"load"),
-			     func_utils_make_func_value (ps,utils_global_load),
-			     0, 0, 0);
-  value_object_utils_insert (ps, global, tounichars (ps,"include"),
-			     func_utils_make_func_value (ps,utils_global_load),
-			     0, 0, 0);
-  value_object_utils_insert (ps, global, tounichars (ps,"require"),
-			     func_utils_make_func_value (ps,utils_global_require),
-			     0, 0, 0);
-
+	value_object_utils_insert (ps, global, tounichars (ps,"load"), func_utils_make_func_value (ps,utils_global_load), 0, 0, 0);
+	value_object_utils_insert (ps, global, tounichars (ps,"include"), func_utils_make_func_value (ps,utils_global_load), 0, 0, 0);
+	value_object_utils_insert (ps, global, tounichars (ps,"require"), func_utils_make_func_value (ps,utils_global_require), 0, 0, 0);
 }
 #endif
-
 
