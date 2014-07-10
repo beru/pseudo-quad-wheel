@@ -51,8 +51,8 @@
 
 #else
 
-static void *(*_localmalloc)(void *c, int size);
-static void (*_localfree)(void *c, void *p);
+static void* (*_localmalloc)(void* c, unsigned int size);
+static void (*_localfree)(void* c, void* p);
 
 #define _STRING_ALLOCA(interp, ch, statesz)  (ch *)_localmalloc(interp, statesz)
 #define _STRING_ALLOCAFREE(ec,q)  _localfree(ec,q)
@@ -231,14 +231,12 @@ _grow_to (interp, grow, new_len)
 
 struct _string
 {
-  int stringclass;
-  int interpreter;
-  int flags;
-  int length;
-  const unsigned short *data;
+	int stringclass;
+	int interpreter;
+	int flags;
+	int length;
+	const unsigned short* data;
 };
-
-
 
 struct _input;
 
@@ -320,13 +318,13 @@ _input_utf8_next (inp)
     }
   else
     {
-      for (bytes = 1; bytes < 6; bytes++)
+      for (bytes=1; bytes<6; bytes++)
 	if ((*inpu->s & mask[bytes]) == mask[bytes - 1])
 	  break;
       if (bytes < 6)
 	{
 	  c = *inpu->s++ & ~mask[bytes];
-	  for (i = bytes, j = 0; i--; j++)
+	  for (i=bytes, j=0; i--; j++)
 	    {
 	      if ((*inpu->s & 0xc0) != 0x80)
 		{
@@ -497,9 +495,9 @@ _input_lookahead_copy (inp, buf, buflen)
   if (buflen <= 0 || inp->eof)
     return 0;
   buf[0] = inp->lookahead;
-  for (i = 0; i < la->max && i + 1 < buflen &&
-       !la->buf[(la->ptr + i) % la->max].eof; i++)
+  for (i=0; i<la->max && i+1<buflen && !la->buf[(la->ptr + i) % la->max].eof; i++) {
     buf[i + 1] = la->buf[(la->ptr + i) % la->max].ch;
+  }
   return i + 1;
 }
 
@@ -529,7 +527,7 @@ _input_lookahead_new (sub, max)
   la->sub = sub;
   la->ptr = 0;
   la->max = max;
-  for (i = 0; i < max + 1; i++)
+  for (i=0; i<max+1; i++)
     la_next ((struct _input *) la);
   return (struct _input *) la;
 }
@@ -818,9 +816,9 @@ cc_intern (recontext, c)
      struct recontext *recontext;
      struct charclass *c;
 {
-  struct ecma_regex *regex = recontext->regex;
-  struct execcontext *interp = recontext->interpreter;
-  int i;
+  struct ecma_regex* regex = recontext->regex;
+  struct execcontext* interp = recontext->interpreter;
+  unsigned int i;
 
   for (i = 0; i < regex->cclen; i++)
     if (cc_cmp (c, regex->cc[i]) == 0)
@@ -2455,9 +2453,8 @@ pcode_run (interp, regex, addr, text, state)
 	case OP_BRK:
 	case OP_NBRK:
 	  {
-	    int a, b;
-	    a = IsWordChar (index - 1);
-	    b = IsWordChar (index);
+	    int a = IsWordChar (index - 1);
+	    int b = IsWordChar (index);
 	    if (op == OP_BRK)
 	      {
 		if (a == b)
@@ -2475,15 +2472,16 @@ pcode_run (interp, regex, addr, text, state)
 	case OP_BACKREF:
 	  if (!CAPTURE_IS_UNDEFINED (capture[i]))
 	    {
-	      int x, len, br;
-	      br = capture[i].cap_start;
-	      len = capture[i].cap_end - br;
-	      if (len + index > text->length)
-		return 0;
-	      for (x = 0; x < len; x++)
-		if (Canonicalize (regex, text->data[br + x])
-		    != Canonicalize (regex, text->data[index + x]))
-		  return 0;
+	      int br = capture[i].cap_start;
+	      int len = capture[i].cap_end - br;
+	      if (len + index > text->length) {
+			return 0;
+		  }
+	      for (int x = 0; x < len; x++) {
+			if (Canonicalize (regex, text->data[br + x]) != Canonicalize (regex, text->data[index + x])) {
+			  return 0;
+			}
+		  }
 	      index += len;
 	    }
 	  break;
@@ -2520,7 +2518,7 @@ _ecma_regex_match (interp, aregex, text, index, capture_ret)
 
   capture[0].cap_start = index;
   capture[0].cap_end = index;
-  for (i = 1; i < regex->ncaptures; i++)
+  for (i=1; i<regex->ncaptures; i++)
     {
       capture[i].cap_start = -1;
       capture[i].cap_end = -1;
@@ -2608,7 +2606,7 @@ regexec_u (const regex_t * preg,
   int i;
   int ret;
   int n;
-  for (i = 0; i < len; i++)
+  for (i=0; i<len; i++)
     {
       ret = ecma_regex_match (preg->interp, preg->pat, string, len, i, q);
       if (ret == 1)
@@ -2638,8 +2636,8 @@ regfree_u (regex_t * preg)
 }
 
 void reg_init(
-	void *(*localmalloc)(void *c, int size),
-	void (*localfree)(void *c, void *p)
+	void* (*localmalloc)(void* c, unsigned int size),
+	void (*localfree)(void* c, void* p)
 	)
 {
   _localmalloc = localmalloc;

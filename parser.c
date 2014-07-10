@@ -518,7 +518,7 @@ union yyalloc
       do					\
 	{					\
 	  YYSIZE_T yyi;				\
-	  for (yyi = 0; yyi < (Count); yyi++)	\
+	  for (yyi=0; yyi<(Count); yyi++)	\
 	    (To)[yyi] = (From)[yyi];		\
 	}					\
       while (YYID (0))
@@ -1527,7 +1527,7 @@ yy_stack_print (yybottom, yytop)
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
-  for (; yybottom <= yytop; yybottom++)
+  for (; yybottom<=yytop; yybottom++)
     {
       int yybot = *yybottom;
       YYFPRINTF (stderr, " %d", yybot);
@@ -1565,7 +1565,7 @@ yy_reduce_print (yyvsp, yylsp, yyrule, ps)
   YYFPRINTF (stderr, "Reducing stack by rule %d (line %lu):\n",
 	     yyrule - 1, yylno);
   /* The symbols being reduced.  */
-  for (yyi = 0; yyi < yynrhs; yyi++)
+  for (yyi=0; yyi<yynrhs; yyi++)
     {
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
@@ -1627,7 +1627,7 @@ yystrlen (yystr)
 #endif
 {
   YYSIZE_T yylen;
-  for (yylen = 0; yystr[yylen]; yylen++)
+  for (yylen=0; yystr[yylen]; yylen++)
     continue;
   return yylen;
 }
@@ -1776,7 +1776,7 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
           int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
           int yyx;
 
-          for (yyx = yyxbegin; yyx < yyxend; ++yyx)
+          for (yyx=yyxbegin; yyx<yyxend; ++yyx)
             if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR
                 && !yytable_value_is_error (yytable[yyx + yyn]))
               {
@@ -2487,7 +2487,7 @@ yyreduce:
 #line 280 "parser.y"
     { OpCodes *ophead;
 		CaseList *cl = (yyvsp[(7) - (8)]);
-		OpCodes *allstats = codes_new(ps,3);
+		OpCodes *allstats = codes_new(ps, 3);
 		CaseList *cldefault = NULL;
 		CaseList *head = NULL;
 		CaseList *t;

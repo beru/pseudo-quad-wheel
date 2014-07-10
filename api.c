@@ -47,7 +47,7 @@ uniname2cstrdup (void* ps, unsigned short* p)
 	return ret;
 }
 
-/* get value*/
+// get value
 
 int
 js_utils_get_var_int_value (PSTATE* ps, Value* csc, unichar* unistr, int* d)
@@ -102,7 +102,7 @@ js_utils_get_var_string_value (PSTATE* ps, Value* csc, unichar* unistr, unsigned
 }
 
 
-/* load */
+// load
 
 
 #include <stdio.h>
@@ -130,37 +130,37 @@ typedef struct js_context
 {
 	Value* scope;
 	ScopeChain* scopechain;
-	struct memcontext* memcontext;
-	struct execctx ec;
+	memcontext* memcontext;
+	execctx ec;
 	PSTATE* pstate;
-} js_context_t;
+} js_context;
 
-struct js_context*
+js_context*
 js_context_new ()
 {
-	struct js_context* ctx = malloc (sizeof (js_context_t));
+	js_context* ctx = malloc (sizeof (js_context));
 	return ctx;
 }
 
 void
-js_context_free (struct js_context* p)
+js_context_free (js_context* p)
 {
 	free (p);
 }
 
 int
-js_context_exec_first (js_context_t* globalcontext, int argc, char** argv, char* program)
+js_context_exec_first (js_context* globalcontext, int argc, char** argv, char* program)
 {
-	/* subsystem init */
-	struct memcontext* mc = malloc (sizeof (struct memcontext));
+	// subsystem init
+	memcontext* mc = malloc (sizeof (memcontext));
 	globalcontext->memcontext = mc;
 #if USE_DLMALLOC
 	mc->mymspace = create_mspace (0, 0);
 #endif
 
-	mpool_init (mc);		/* general mempool */
+	mpool_init (mc);		// general mempool
 	objects_init (mc);
-	reg_init(mm_alloc, mm_free);
+	reg_init(&mm_alloc, &mm_free);
 
 	PSTATE* ps = pstate_new_from_string (program, mc, "-");
 	int jmpbufsp = ps->ec.jmpbufsp;
@@ -168,24 +168,23 @@ js_context_exec_first (js_context_t* globalcontext, int argc, char** argv, char*
 		yyparse (ps);
 
 		if (!ps->err_count) {
-			/* current scope, also global */
+			// current scope, also global
 			Value* csc = value_new (ps);
 			globalcontext->scope = csc;
 
 			value_make_object (*csc, object_new (ps));
 
-			/* top this and prototype chain */
+			// top this and prototype chain
 			proto_init (ps, csc);
 
-			/* global funtion, debugger, etc */
+			// global funtion, debugger, etc
 			utils_init (ps, csc, argc, argv);
 
-			/* file system extern init */
+			// file system extern init
 			filesys_init (ps, csc);
-
 			load_ex_init (ps, csc);
 
-			/* initial scope chain, nothing */
+			// initial scope chain, nothing
 			ScopeChain* gsc = scope_chain_new (ps, 0);
 			globalcontext->scopechain = gsc;
 
@@ -201,26 +200,26 @@ js_context_exec_first (js_context_t* globalcontext, int argc, char** argv, char*
 					bug ("Stack not ballence after execute script\n");
 				}
 			}
-			/*              scope_chain_free(gsc); */
-			/*              value_free(csc); */
+			//              scope_chain_free(gsc);
+			//              value_free(csc);
 		}
 		ps->ec.jmpbufsp = jmpbufsp;
 	}else {
 		ps->ec.jmpbufsp = jmpbufsp;
 	}
-	memcpy (&globalcontext->ec, &ps->ec, sizeof (struct execctx));
+	memcpy (&globalcontext->ec, &ps->ec, sizeof (execctx));
 	pstate_free (ps);
 	return 0;
 }
 
 int
-js_context_exec_next (js_context_t* globalcontext, char* program)
+js_context_exec_next (js_context* globalcontext, char* program)
 {
 	Value* csc = globalcontext->scope;
 	ScopeChain* gsc = globalcontext->scopechain;
 	
 	PSTATE* ps = pstate_new_from_string (program, globalcontext->memcontext, "-");
-	memcpy (&ps->ec, &globalcontext->ec, sizeof (struct execctx));
+	memcpy (&ps->ec, &globalcontext->ec, sizeof (execctx));
 	int jmpbufsp = ps->ec.jmpbufsp;
 	if (setjmp (ps->ec.jmpbuf[ps->ec.jmpbufsp++]) == 0) {
 		yyparse (ps);
@@ -245,7 +244,7 @@ js_context_exec_next (js_context_t* globalcontext, char* program)
 
 
 void
-js_context_get_var_int_value (js_context_t* glbl, char* name, int* val)
+js_context_get_var_int_value (js_context* glbl, char* name, int* val)
 {
 	unsigned short nameunistr[256];
 	unsigned short* uniname = cstr2uniname (name, nameunistr);
@@ -256,7 +255,7 @@ js_context_get_var_int_value (js_context_t* glbl, char* name, int* val)
 }
 
 void
-js_context_get_var_double_value (js_context_t* glbl, char* name, double* val)
+js_context_get_var_double_value (js_context* glbl, char* name, double* val)
 {
 	unsigned short nameunistr[256];
 	unsigned short* uniname = cstr2uniname (name, nameunistr);
@@ -267,7 +266,7 @@ js_context_get_var_double_value (js_context_t* glbl, char* name, double* val)
 }
 
 void
-js_context_get_var_string_value (js_context_t* glbl, char* name, unsigned char** val)
+js_context_get_var_string_value (js_context* glbl, char* name, unsigned char** val)
 {
 	unsigned short nameunistr[256];
 	unsigned short* uniname = cstr2uniname (name, nameunistr);
@@ -278,14 +277,14 @@ js_context_get_var_string_value (js_context_t* glbl, char* name, unsigned char**
 }
 
 int
-js_context_done (js_context_t* globalcontext)
+js_context_done (js_context* globalcontext)
 {
 	scope_chain_free (globalcontext->pstate, globalcontext->scopechain);
 	value_free (globalcontext->pstate, globalcontext->scope);
 }
 
 #if 0
-/* slot */
+// slot
 #include <pthread.h>
 
 static pthread_mutex_t mutex;
@@ -334,7 +333,7 @@ js_utils_slot_alloc ()
   int r = -1;
 	int i;
   pthread_mutex_lock (&mutex);
-  for (i = 0; i < N_SLOT; i++)
+  for (i=0; i<N_SLOT; i++)
     {
       if (slots[i].used == 0)
 	{

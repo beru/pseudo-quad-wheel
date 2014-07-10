@@ -14,6 +14,7 @@
 #include "utils.h"
 #include "unichar.h"
 #include "mempool.h"
+#include "pstate.h"
 
 
 /* todo list:
@@ -68,8 +69,7 @@
 // make top n to be right values
 #define topevaln(n) do {						\
 	int a = (n); 								\
-	int c; 										\
-	for (c = 1; c <= a; ++c) { 					\
+	for (int c=1; c<=a; ++c) {					\
 		if (stack[sp - c].vt == VT_VARIABLE) {	\
 			Value *v = stack[sp - c].d.lval;	\
 			value_copy(stack[sp - c], *v);		\
@@ -156,7 +156,7 @@ typedef enum {
 	TL_WITH,
 } ttype;							// type of try
 
-typedef struct TryList {
+struct TryList {
 	ttype type;
 	union {
 		struct {					// try data
@@ -188,12 +188,14 @@ typedef struct TryList {
 	ScopeChain* scope_save;			// saved scope (used in catch block/with block)
 	Value* curscope_save;			// saved current scope
 	struct TryList* next;
-} TryList;
+};
+
+typedef struct TryList TryList;
 
 // restore scope chain
 #define restore_scope(scope_save, curscope_save) do {	\
 	if (scope != (scope_save)) {						\
-	  scope_chain_free(ps,scope);					\
+		scope_chain_free(ps,scope);					\
 		scope = (scope_save);							\
 	}													\
 	if (currentScope != (curscope_save)) {				\
@@ -254,9 +256,9 @@ TryList* trylist_new(PSTATE* ps,ttype t, ScopeChain* scope_save, Value* curscope
 
 char* lexer_codename();
 
-static UNISTR(9) PROTOTYPE = { 9, { 'p','r','o','t','o','t','y','p','e' } };
-static UNISTR(6) CALLEE = { 6, { 'c','a','l','l','e','e' } };
-static UNISTR(8) _CALLEE_ = { 8, { 1,'c','a','l','l','e','e', 1 } };
+static const UNISTR(9) PROTOTYPE = { 9, L"prototype" };
+static const UNISTR(6) CALLEE = { 6, L"callee" };
+static const UNISTR(8) _CALLEE_ = { 8, { 1,'c','a','l','l','e','e', 1 } };
 
 int eval(PSTATE* ps, OpCodes* opcodes, 
 		 ScopeChain* scope, Value* currentScope, 	// scope chain
@@ -289,12 +291,12 @@ int eval(PSTATE* ps, OpCodes* opcodes,
 #ifdef DEBUG
 		int i;
 		printf("STACK%d: ", sp);
-		for (i = 0; i < sp; ++i) {
+		for (i=0; i<sp; ++i) {
 		  printf("%s ", vprint(ps,&stack[i]));
 		}
 		printf("\tthis: %s ", vprint(ps,_this));
 		TryList* tlt = trylist;
-		for (i = 0; tlt; tlt = tlt->next) {
+		for (i=0; tlt; tlt=tlt->next) {
 			i++;
 		}
 		printf("TL: %d, excpt: %s\n", i, vprint(ps,&ps->last_exception));

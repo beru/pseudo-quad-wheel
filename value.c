@@ -8,18 +8,17 @@
 #include "mempool.h"
 #include "pstate.h"
 
-static mpool_t object_pool;
-static mpool_t value_pool;
+static Mempool* object_pool;
+static Mempool* value_pool;
 
 // length unichar constant
-static
+static const
 UNISTR (6)
   LENGTH =
 {
   6,
-  {
-'l', 'e', 'n', 'g', 't', 'h'}};
-
+  {'l', 'e', 'n', 'g', 't', 'h'}
+};
 
 ObjKey*
 objkey_new (void* ps, const unichar* strkey, int flag)
@@ -28,6 +27,19 @@ objkey_new (void* ps, const unichar* strkey, int flag)
 	ObjKey* ok = (ObjKey*) (((int) p) + sizeof (int) * 2);
 
 	unistrcpy ((unichar*) ok, strkey);
+	KEYFLAG (ok) = flag;
+
+	return ok;
+}
+
+ObjKey*
+objkey_new2 (void* ps, const char* strkey, int flag)
+{
+	size_t slen = strlen(strkey);
+	void* p = mm_alloc (ps, slen * sizeof (unichar) + sizeof (int) * 2);
+	ObjKey* ok = (ObjKey*) (((int) p) + sizeof (int) * 2);
+
+	strcpyuni ((unichar*) ok, strkey, slen);
 	KEYFLAG (ok) = flag;
 
 	return ok;
@@ -48,15 +60,14 @@ objkey_compare (void* left, void* right)
 {
 	ObjKey* a = left;
 	ObjKey* b = right;
-
 	return unistrcmp (b, a);
 }
 
 static void
 objkey_free (void* ps, void* data)
 {
-  // printf("Free key: "); 
-  //   _uniprint(data);
+	// printf("Free key: "); 
+	//   _uniprint(data);
 	psfree ((void*) (((int) data) - sizeof (int) * 2));
 }
 
@@ -71,7 +82,7 @@ iterobj_new (PSTATE* ps)
 void
 iterobj_free (PSTATE* ps, IterObj* iobj)
 {
-	for (int i = 0; i < iobj->count; i++) {
+	for (int i=0; i<iobj->count; i++) {
 		objkey_free (ps, iobj->keys[i]);
 	}
 	psfree (iobj->keys);
@@ -104,7 +115,6 @@ funcobj_free (PSTATE* ps, FuncObj* fobj)
 	if (fobj->scope) {
 		scope_chain_free (ps, fobj->scope);
 	}
-
 	// Do not free fobj->func, always constant
 	psfree (fobj);
 }
@@ -147,17 +157,15 @@ object_free (PSTATE* ps, Object* obj)
 // extern Value *Object_prototype;
 
 Object*
-object_make (struct PSTATE* ps, Value* items, int count)
+object_make (PSTATE* ps, Value* items, int count)
 {
 	Object* obj = object_new (ps);
-	for (int i = 0; i < count; i += 2) {
-		ObjKey* ok;
-		Value* v;
+	for (int i=0; i<count; i+=2) {
 		if (items[i].vt != VT_STRING) {
 			bug ("Making object\n");
 		}
-		ok = objkey_new (ps, items[i].d.str, 0);
-		v = value_new (ps);
+		ObjKey* ok = objkey_new (ps, items[i].d.str, 0);
+		Value* v = value_new (ps);
 		value_copy (*v, items[i + 1]);
 		rbtree_insert (ps, obj->tree, ok, v);
 	}
@@ -167,11 +175,11 @@ object_make (struct PSTATE* ps, Value* items, int count)
 
 // extern Value *Array_prototype;
 Object*
-object_make_array (struct PSTATE* ps, Value* items, int count)
+object_make_array (PSTATE* ps, Value* items, int count)
 {
 	Object* obj = object_new (ps);
 	UNISTR (12) unibuf;
-	for (int i = 0; i < count; ++i) {
+	for (int i=0; i<count; ++i) {
 		num_itoa10 (i, unibuf.unistr);
 		ObjKey* ok = objkey_new (ps, unibuf.unistr, 0);
 		Value* v = value_new (ps);
@@ -233,69 +241,69 @@ value_toprimitive (PSTATE* ps, Value* v)
 	}
 }
 
-static
+static const
 UNISTR (4)
   USTRUE =
 {
-  4,
-  {
-'t', 'r', 'u', 'e'}};
+	4,
+	L"true"
+};
 
-static
+static const
 UNISTR (5)
   USFALSE =
 {
-  5,
-  {
-'f', 'a', 'l', 's', 'e'}};
+	5,
+	L"false"
+};
 
-static
+static const
 UNISTR (4)
   USNULL =
 {
-  4,
-  {
-'n', 'u', 'l', 'l'}};
+	4,
+	L"null"
+};
 
-static
+static const
 UNISTR (3)
   USNAN =
 {
-  3,
-  {
-'N', 'a', 'N'}};
+	3,
+	L"NaN"
+};
 
-static
+static const
 UNISTR (8)
   USINF =
 {
-  8,
-  {
-'I', 'n', 'f', 'i', 'n', 'i', 't', 'y'}};
+	8,
+	L"Infinity"
+};
 
-static
-UNISTR (8)
+static const
+UNISTR (9)
   USNINF =
 {
-  9,
-  {
-'-', 'I', 'n', 'f', 'i', 'n', 'i', 't', 'y'}};
+	9,
+	L"-Infinity"
+};
 
-static
+static const
 UNISTR (15)
   USOBJ =
 {
-  15,
-  {
-'[', 'o', 'b', 'j', 'e', 'c', 't', ' ', 'O', 'b', 'j', 'e', 'c', 't', ']'}};
+	15,
+	L"[object Object]"
+};
 
-static
+static const
 UNISTR (9)
   USUNDEF =
 {
-  9,
-  {
-'u', 'n', 'd', 'e', 'f', 'i', 'n', 'e', 'd'}};
+	9,
+	L"undefined"
+};
 
 void
 value_tostring (PSTATE* ps, Value* v)
@@ -449,27 +457,24 @@ value_toobject (PSTATE* ps, Value* v)
 	case VT_UNDEF:
 	case VT_NULL:
 		die ("Can not convert a undefined/null value to object\n");
-	case VT_BOOL:
-	{
+	case VT_BOOL: {
 		o->d.val = v->d.val;
 		o->ot = OT_BOOL;
 		o->__proto__ = Boolean_prototype;
 		break;
 	}
-	case VT_NUMBER:
-	{
+	case VT_NUMBER: {
 		o->d.num = v->d.num;
 		o->ot = OT_NUMBER;
 		o->__proto__ = Number_prototype;
 		break;
 	}
-	case VT_STRING:
-	{
+	case VT_STRING: {
 		o->d.str = unistrdup (ps, v->d.str);
 		o->ot = OT_STRING;
 		o->__proto__ = String_prototype;
 		int len = unistrlen (o->d.str);
-		for (int i = 0; i < len; ++i) {
+		for (int i=0; i<len; ++i) {
 			Value* v = value_new (ps);
 			value_make_string (*v, unisubstrdup (ps, o->d.str, i, 1));
 			object_utils_insert_array (ps, o, i, v, 0, 0, 1);
@@ -500,8 +505,7 @@ value_istrue (Value* v)
 		return 1;
 	case VT_STRING:
 		return unistrlen (v->d.str) ? 1 : 0;
-	case VT_OBJECT:
-	{
+	case VT_OBJECT: {
 		Object* o = v->d.obj;
 		if (o->ot == OT_USERDEF) {
 			return userdata_istrue (o->d.uobj);
@@ -530,7 +534,6 @@ value_object_insert (PSTATE* ps, Value* target, ObjKey* key, Value* value)
 		warn ("Target is not object\n");
 		return;
 	}
-
 	object_insert (ps, target->d.obj, key, value);
 }
 
@@ -541,7 +544,6 @@ object_try_extern (PSTATE* ps, Object* obj, int inserted_index)
 	if (len < 0) {
 		return;
 	}
-
 	if (len < inserted_index + 1) {
 		object_set_length (ps, obj, inserted_index + 1);
 	}
@@ -631,7 +633,7 @@ value_object_delete (PSTATE* ps, Value* target, Value* key)
 	}
 	
 	// all reset to NULL
-	for (int i = 0; i < 8; ++i) {
+	for (int i=0; i<8; ++i) {
 		target->d.obj->_acc_values[i] = NULL;
 		target->d.obj->_acc_keys[i] = NULL;
 	}
@@ -713,10 +715,10 @@ static int
 _object_getkeys_callback (void* ps, void* key, void* value, void* userdata)
 {
 	ObjKey* ok = key;
-	IterObj* io = userdata;
 	int flag = KEYFLAG (ok);
 
 	if (!bits_get (flag, OM_DONTEMU)) {
+		IterObj* io = userdata;
 		iterobj_insert (ps, io, ok);
 	}
 	return 0;
@@ -740,7 +742,6 @@ void
 value_object_getkeys (PSTATE* ps, Value* target, Value* ret)
 {
 	IterObj* io = iterobj_new (ps);
-
 	_object_getkeys (ps, target, io);
 	Object* r = object_new (ps);
 	r->ot = OT_ITER;
@@ -764,7 +765,7 @@ Value*
 scope_chain_object_lookup (PSTATE* ps, ScopeChain* sc, ObjKey* key)
 {
 	Value* ret;
-	for (int i = sc->chains_cnt - 1; i >= 0; --i) {
+	for (int i=sc->chains_cnt-1; i>=0; --i) {
 		if ((ret = value_object_lookup (sc->chains[i], key, NULL))) {
 			return ret;
 		}
@@ -784,7 +785,7 @@ scope_chain_dup_next (PSTATE* ps, ScopeChain* sc, Value* next)
 	}
 	ScopeChain* r = scope_chain_new (ps, sc->chains_cnt + 1);
 	int i;
-	for (i = 0; i < sc->chains_cnt; ++i) {
+	for (i=0; i<sc->chains_cnt; ++i) {
 		r->chains[i] = value_new (ps);
 		value_copy (*(r->chains[i]), *(sc->chains[i]));
 	}
@@ -797,7 +798,7 @@ scope_chain_dup_next (PSTATE* ps, ScopeChain* sc, Value* next)
 void
 scope_chain_free (PSTATE* ps, ScopeChain* sc)
 {
-	for (int i = 0; i < sc->chains_cnt; ++i) {
+	for (int i=0; i<sc->chains_cnt; ++i) {
 		value_free (ps, sc->chains[i]);
 	}
 	psfree (sc->chains);
@@ -848,7 +849,6 @@ value_object_lookup_array (Value* args, int index, int* flag)
 {
 	UNISTR (12) unibuf;
 	num_itoa10 (index, unibuf.unistr);
-
 	return object_lookup (args->d.obj, unibuf.unistr, flag);
 }
 
@@ -878,6 +878,24 @@ object_utils_insert (PSTATE* ps, Object* obj, const unichar* key, Value* val, in
 }
 
 void
+object_utils_insert2 (PSTATE* ps, Object* obj, const char* key, Value* val, int deletable, int writable, int emuable)
+{
+	int flag = 0;
+	if (!deletable) {
+		flag |= OM_DONTDEL;
+	}
+	if (!writable) {
+		flag |= OM_READONLY;
+	}
+	if (!emuable) {
+		flag |= OM_DONTEMU;
+	}
+	ObjKey* ok = objkey_new2 (ps, key, flag);
+	object_insert (ps, obj, ok, val);
+}
+
+
+void
 value_object_utils_insert (PSTATE* ps, Value* target, const unichar* key, Value* val, int deletable, int writable, int emuable)
 {
 	if (target->vt != VT_OBJECT) {
@@ -885,6 +903,16 @@ value_object_utils_insert (PSTATE* ps, Value* target, const unichar* key, Value*
 		return;
 	}
 	object_utils_insert (ps, target->d.obj, key, val, deletable, writable, emuable);
+}
+
+void
+value_object_utils_insert2 (PSTATE* ps, Value* target, const char* key, Value* val, int deletable, int writable, int emuable)
+{
+	if (target->vt != VT_OBJECT) {
+		warn ("Target is not object\n");
+		return;
+	}
+	object_utils_insert2 (ps, target->d.obj, key, val, deletable, writable, emuable);
 }
 
 void
@@ -946,7 +974,6 @@ void
 userdata_free (PSTATE* ps, UserData* ud)
 {
 	udid id = ud->id;
-
 	if (id < 0 || id >= global_userdataregs_cnt) {
 		xdie ("UDID error\n");
 	}
@@ -1037,11 +1064,10 @@ objvalue_insert_helper (void* key)
 }
 
 void
-objects_init (struct memcontext* mc)
+objects_init (memcontext* mc)
 {
 	object_pool = mpool_create (mc, sizeof (Object));
 	value_pool = mpool_create (mc, sizeof (Value));
-
 	rbtree_module_init (mc,
 				objkey_compare, objkey_free,
 				objvalue_free, objvalue_vreplace,

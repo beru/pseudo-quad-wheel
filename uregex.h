@@ -39,7 +39,7 @@ extern size_t regerror (int __errcode, const regex_t* __preg, char* __errbuf, si
 extern void regfree (regex_t* __preg);
 
 void reg_init(
-	void* (*localmalloc)(void* c, int size),
+	void* (*localmalloc)(void* c, unsigned int size),
 	void (*localfree)(void* c, void* p)
 );
 

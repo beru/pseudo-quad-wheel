@@ -15,12 +15,12 @@ regex_u_new (void* ps, const unsigned short* str, int len, int compflag)
 {
 	regex_t* reg = psmalloc (sizeof (regex_t));
 	if (!reg) {
-		return 0;			/* die("Out of memory\n"); */
+		return 0;			// die("Out of memory\n");
 	}
 	reg->interp = ps;
 
 	if (regcomp_u (reg, str, len, compflag)) {
-		return 0;			/* die("Invalid regex string'\n"); */
+		return 0;			// die("Invalid regex string'\n");
 	}
 
 	return reg;
@@ -34,15 +34,15 @@ regex_new (PSTATE* ps, const char* str, int compflag)
 	unsigned short* ustr = psmalloc ((ulen + 1) * 2);
 	if (!reg) {
 		psfree(ustr);
-		return 0;			/* die("Out of memory\n"); */
+		return 0;			// die("Out of memory\n");
 	}
 	int i;
-	for (i = 0; i < ulen; i++) {
+	for (i=0; i<ulen; i++) {
 		ustr[i] = (unsigned char) str[i];
 	}
 	ustr[i] = 0;
 	if (regcomp_u (reg, ustr, ulen, compflag)) {
-		return 0;			/*  die("Invalid regex string'\n"); */
+		return 0;			//  die("Invalid regex string'\n");
 	}
 	return reg;
 }

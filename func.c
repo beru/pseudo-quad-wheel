@@ -11,7 +11,7 @@
 #include "pstate.h"
 
 Func*
-func_make_static (PSTATE* ps, strs* args, strs* localvar, struct OpCodes* ops)
+func_make_static (PSTATE* ps, strs* args, strs* localvar, OpCodes* ops)
 {
 	Func* f = psmalloc (sizeof (Func));
 	memset (f, 0, sizeof (Func));
@@ -26,7 +26,7 @@ void
 func_init_localvar (PSTATE* ps, Value* arguments, Func* who)
 {
 	if (who->localnames) {
-		for (int i = 0; i < who->localnames->count; ++i) {
+		for (int i=0; i<who->localnames->count; ++i) {
 			const unichar* argkey = strs_get (ps, who->localnames, i);
 			if (argkey) {
 				ObjKey* strkey = objkey_new (ps, argkey, OM_DONTEMU);

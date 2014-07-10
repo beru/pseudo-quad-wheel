@@ -92,7 +92,7 @@ print_value (void* ps, Value* v, int quote)
 			Func* f = o->d.fobj->func;
 			if (f->type == FC_NORMAL) {
 				printf ("function (");
-				for (int i = 0; i < f->argnames->count; ++i) {
+				for (int i=0; i<f->argnames->count; ++i) {
 					printf ("%s ",
 					tochars (ps, strs_get (ps, f->argnames, i)));
 				}
@@ -124,7 +124,7 @@ print_value (void* ps, Value* v, int quote)
 					printf ("undefined");
 				}
 			}
-			for (int i = 1; i < len; ++i) {
+			for (int i=1; i<len; ++i) {
 				Value* nv = value_object_lookup_array (v, i, NULL);
 				printf (", ");
 				if (nv) {
@@ -187,13 +187,13 @@ global_exit (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 int
-global_print (PSTATE * ps, Value * args, Value * _this, Value * ret, int asc)
+global_print (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Can not call console.log as a constructor\n");
 	}
 	int argc = value_get_length (args);
-	for (int i = 0; i < argc; ++i) {
+	for (int i=0; i<argc; ++i) {
 		Value* v = value_object_lookup_array (args, i, NULL);
 		if (v) {
 			print_value (ps, v, 0);
@@ -208,7 +208,7 @@ extern int yyparse (PSTATE* ps);
 void
 pstate_copy_ec (PSTATE* newps, PSTATE* ps)
 {
-	memcpy (&newps->ec, &ps->ec, sizeof (struct execctx));
+	memcpy (&newps->ec, &ps->ec, sizeof (execctx));
 }
 
 // eval here is diff from SSFunc, current scope info should be past to eval
@@ -260,7 +260,7 @@ console_log (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 		die ("Can not call console.log as a constructor\n");
 	}
 	int argc = value_get_length (args);
-	for (int i = 0; i < argc; ++i) {
+	for (int i=0; i<argc; ++i) {
 		Value* v = value_object_lookup_array (args, i, NULL);
 		if (v) {
 			print_value (ps, v, 0);
@@ -278,7 +278,7 @@ init_program_args (PSTATE* ps, int argc, char** argv)
 	obj->__proto__ = Array_prototype;
 	value_make_object (*ret, obj);
 	object_set_length (ps, obj, 0);
-	for (int i = 0; i < argc; ++i) {
+	for (int i=0; i<argc; ++i) {
 		Value* val = value_new (ps);
 		value_make_string (*val, unistrdup_str (ps, argv[i]));
 		value_object_utils_insert_array (ps, ret, i, val, 1, 1, 1);
@@ -299,13 +299,13 @@ utils_init (PSTATE* ps, Value* global, int argc, char** argv)
 	conlog->d.obj->__proto__ = Function_prototype;
 
 	// forth, insert console.log value into console object
-	value_object_utils_insert (ps, console, tounichars (ps, "log"), conlog, 1, 1, 0);
-	value_object_utils_insert (ps, console, tounichars (ps, "print"), value_dup (ps, conlog), 1, 1, 0);
-	value_object_utils_insert (ps, console, tounichars (ps, "output"), value_dup (ps, conlog), 1, 1, 0);
-	value_object_utils_insert (ps, console, tounichars (ps, "input"), func_utils_make_func_value (ps, console_input), 1, 1, 0);
-	value_object_utils_insert (ps, console, tounichars (ps, "args"), init_program_args (ps, argc, argv), 1, 1, 0);
+	value_object_utils_insert2 (ps, console, "log", conlog, 1, 1, 0);
+	value_object_utils_insert2 (ps, console, "print", value_dup (ps, conlog), 1, 1, 0);
+	value_object_utils_insert2 (ps, console, "output", value_dup (ps, conlog), 1, 1, 0);
+	value_object_utils_insert2 (ps, console, "input", func_utils_make_func_value (ps, console_input), 1, 1, 0);
+	value_object_utils_insert2 (ps, console, "args", init_program_args (ps, argc, argv), 1, 1, 0);
 
 	// last, insert console to global naming space
-	value_object_utils_insert (ps, global, tounichars (ps, "console"), console, 0, 0, 0);
+	value_object_utils_insert2 (ps, global, "console", console, 0, 0, 0);
 }
 

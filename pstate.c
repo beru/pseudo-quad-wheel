@@ -10,12 +10,12 @@ pstate_new (void* mc)
 {
 	PSTATE* ps = mc_malloc (mc, sizeof (PSTATE));
 	memset (ps, 0, sizeof (PSTATE));
-	((PSTATE*) ps)->ec.memcontext = mc;
+	((PSTATE*)ps)->ec.memcontext = mc;
 	return ps;
 }
 
 PSTATE*
-pstate_new_from_file (FILE* fp, struct memcontext* mc, char* codename)
+pstate_new_from_file (FILE* fp, memcontext* mc, char* codename)
 {
 	PSTATE* ps = pstate_new (mc);
 	Lexer* l= mm_alloc (ps, sizeof (Lexer));
@@ -31,7 +31,7 @@ pstate_new_from_file (FILE* fp, struct memcontext* mc, char* codename)
 }
 
 PSTATE*
-pstate_new_from_string (const char* str, struct memcontext* mc, char* codename)
+pstate_new_from_string (const char* str, memcontext* mc, char* codename)
 {
 	PSTATE* ps = pstate_new (mc);
 	Lexer* l= psmalloc (sizeof (Lexer));
@@ -48,10 +48,10 @@ pstate_new_from_string (const char* str, struct memcontext* mc, char* codename)
 void
 pstate_free (PSTATE* ps)
 {
-	/* todo: free opcodes */
+	// todo: free opcodes
 	psfree (ps->lexer);
 
-	mc_free (((PSTATE *) ps)->ec.memcontext, ps);
+	mc_free (((PSTATE*)ps)->ec.memcontext, ps);
 }
 
 
@@ -70,14 +70,14 @@ get_general_pools (void* ps)
 void*
 _ps_memctx_malloc (void* ps, int size)
 {
-	if (((PSTATE*) ps)->ec.memcontext == 0) return malloc(size);
+	if (((PSTATE*)ps)->ec.memcontext == 0) return malloc(size);
 	return mc_malloc (((PSTATE *) ps)->ec.memcontext, size);
 }
 
 void
 _ps_memctx_free (void* ps, void* p)
 {
-	if (((PSTATE*) ps)->ec.memcontext == 0) {
+	if (((PSTATE*)ps)->ec.memcontext == 0) {
 		free(p);
 		return;
 	}else {
@@ -129,7 +129,9 @@ void**
 pstate_get_general_pools (void* ec)
 {
 	PSTATE* ps = ec;
-	if (((PSTATE*) ps)->ec.memcontext == 0) return 0;
+	if (((PSTATE*)ps)->ec.memcontext == 0) {
+		return 0;
+	}
 	return ps->ec.memcontext->general_pools;
 }
 

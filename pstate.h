@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include "code.h"
-#include "value.h"
 
 #include <setjmp.h>
 
@@ -13,8 +12,12 @@
 #endif
 #include "mempool.h"
 #include "memcontext.h"
+#include "code.h"
+#include "value.h"
 
-struct execctx {
+typedef struct OpCode OpCode;
+
+typedef struct execctx {
 	Value* Object_prototype;
 	Value* Function_prototype_prototype;
 	Value* Function_prototype;
@@ -42,26 +45,26 @@ struct execctx {
 
 	jmp_buf jmpbuf[64];
 	int jmpbufsp;
-	struct memcontext *memcontext;
-}; /* execution context */
+	memcontext *memcontext;
+} execctx; /* execution context */
 
 /* Program state(context) */
 typedef struct PSTATE {
 	int err_count;				/* error count after parse */
 	int eval_flag;				/* currently execute in eval function */
- 	struct OpCodes* opcodes;	/* opcodes result(parsing result) */
-	struct Lexer* lexer;		/* seq provider */
+ 	OpCodes* opcodes;	/* opcodes result(parsing result) */
+	Lexer* lexer;		/* seq provider */
 
 	int _context_id;			/* used in FastVar-locating */
 	Value last_exception;		/* exception */
 
-	struct execctx ec; /* execution context */
+	execctx ec;			/* execution context */
 
 	char buf[1024];
 } PSTATE;
 
-PSTATE* pstate_new_from_file(FILE* fp, struct memcontext* memcontext, char*);
-PSTATE* pstate_new_from_string(const char* str, struct memcontext* memcontext, char*);
+PSTATE* pstate_new_from_file(FILE* fp, memcontext* memcontext, char*);
+PSTATE* pstate_new_from_string(const char* str, memcontext* memcontext, char*);
 void pstate_free(PSTATE* ps);
 
 #define Object_prototype ps->ec.Object_prototype

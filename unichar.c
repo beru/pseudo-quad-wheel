@@ -28,7 +28,7 @@ unistrdup_str (void* ec, const char* str)
 	unichar* r = mm_alloc (ec, (len + 1) * sizeof (unichar) + sizeof (int));
 	unichar* rr = (unichar*) ((int) r + sizeof (int));
 	*((int*) r) = len;
-	for (int i = 0; i < len; ++i) {
+	for (int i=0; i<len; ++i) {
 		rr[i] = str[i];
 	}
 	return rr;
@@ -61,10 +61,19 @@ unisubstrdup (void* ec, const unichar* a, int start, int len)
 }
 
 void
+strcpyuni (unichar* to, const char* from, size_t len)
+{
+	for (int i=0; i<len; ++i) {
+		to[i] = from[i];
+	}
+	unistrlen (to) = len;
+}
+
+void
 unistrcpy (unichar* to, const unichar* from)
 {
 	int len = unistrlen (from);
-	for (int i = 0; i < len; ++i) {
+	for (int i=0; i<len; ++i) {
 		to[i] = from[i];
 	}
 	unistrlen (to) = len;
@@ -74,7 +83,7 @@ void
 _uniprint (unichar* s)
 {
 	int len = unistrlen (s);
-	for (int i = 0; i < len; ++i) {
+	for (int i=0; i<len; ++i) {
 		printf ("%c", s[i]);
 	}
 	printf ("\n");
@@ -105,7 +114,7 @@ tochars (void* ps, const unichar* str)
 	char* buf = (char*)pstate_getbuf(ps);
 	int len = unistrlen (str);
 	int i;
-	for (i = 0; i < len && i < 65530; ++i) {
+	for (i=0; i<len && i<65530; ++i) {
 		buf[i] = (char) str[i];
 	}
 	buf[i] = 0;
@@ -119,7 +128,7 @@ tounichars (void* ps, const char* str)
 	int* len = (int*) buf;
 	unichar* b = (unichar*) ((int)buf + sizeof (int));
 	int i;
-	for (i = 0; str[i] && i < 65530; ++i) {
+	for (i=0; str[i] && i<65530; ++i) {
 		b[i] = str[i];
 	}
 	*len = i;
@@ -135,7 +144,7 @@ unistrcmp (const unichar* str1, const unichar* str2)
 		return len1 - len2;
 	}
 	int r;
-	for (int i = 0; i < len1; ++i) {
+	for (int i=0; i<len1; ++i) {
 		if ((r = str1[i] - str2[i])) {
 			return r;
 		}
@@ -173,7 +182,7 @@ unistrpos (unichar* str, int start, unichar* s2)
 	return -1;
 }
 
-/* strdup impletement */
+// strdup impletement
 char*
 c_strdup (void* ec, const char* buf)
 {

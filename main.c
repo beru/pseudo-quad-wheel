@@ -31,8 +31,6 @@ int
 main (int argc, char **argv)
 {
 	FILE* input = stdin;
-	int fid = 0;
-
 	argv++;
 	argc--;
 
@@ -47,13 +45,13 @@ main (int argc, char **argv)
 	}
 
 	// subsystem init
-	struct memcontext *mc = malloc (sizeof (struct memcontext));
+	memcontext* mc = malloc (sizeof (memcontext));
 #if USE_DLMALLOC
 	mc->mymspace = create_mspace(0, 0);
 #endif
 
 	mpool_init (mc);		// general mempool
-	reg_init(mm_alloc, mm_free);
+	reg_init(&mm_alloc, &mm_free);
 	objects_init (mc);
 
 	PSTATE* ps = pstate_new_from_file (input, mc, argv[0]);
@@ -72,6 +70,7 @@ main (int argc, char **argv)
 		// global funtion, debugger, etc
 		utils_init (ps, csc, argc, argv);
 		proto_global_init (ps, csc, argc, argv);
+
 		load_ex_init (ps, csc);
 
 		// file system extern init

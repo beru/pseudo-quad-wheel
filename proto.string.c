@@ -11,7 +11,7 @@
 
 #define MAX_SUBREGEX	256
 
-/* substr */
+// substr
 static int
 strpto_substr (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 {
@@ -43,8 +43,8 @@ strpto_substr (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 
-/* indexOf */
-/* todo regex */
+// indexOf
+// todo regex
 static int
 strpto_indexOf (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 {
@@ -75,24 +75,23 @@ strpto_indexOf (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 	return 0;
 }
 
-static
+static const
 UNISTR (5)
   INDEX =
 {
-  5,
-  {
-'i', 'n', 'd', 'e', 'x'}};
+	5,
+	L"index"
+};
 
-static
+static const
 UNISTR (5)
   INPUT =
 {
-  5,
-  {
-'i', 'n', 'p', 'u', 't'}};
+	5,
+	L"input"
+};
 
-
-/* match */
+// match
 static int
 strpto_match (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 {
@@ -136,12 +135,11 @@ strpto_match (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 	obj->__proto__ = Array_prototype;
 	value_make_object (*ret, obj);
 	object_set_length (ps, ret->d.obj, 0);
-	for (int i = 0; i < MAX_SUBREGEX; ++i) {
-		Value* val;
+	for (int i=0; i<MAX_SUBREGEX; ++i) {
 		if (pos[i].rm_so <= 0 && pos[i].rm_eo <= 0) {
 			break;
 		}
-		val = value_new (ps);
+		Value* val = value_new (ps);
 		value_make_string (*val, unisubstrdup (ps, v, pos[i].rm_so, pos[i].rm_eo - pos[i].rm_so));
 		value_object_utils_insert_array (ps, ret, i, val, 1, 1, 1);
 	}
@@ -154,7 +152,7 @@ strpto_match (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 	return 0;
 }
 
-/* charCodeAt */
+// charCodeAt
 static int
 strpto_charCodeAt (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 {
@@ -200,10 +198,10 @@ proto_string_init (PSTATE* ps, Value* global)
 	if (!String_prototype) {
 		bug ("proto init failed?");
 	}
-	for (int i = 0; i < sizeof (strpro_funcs) / sizeof (struct st_strpro_tab); ++i) {
+	for (int i=0; i<sizeof (strpro_funcs) / sizeof (struct st_strpro_tab); ++i) {
 		Value* n = func_utils_make_func_value (ps, strpro_funcs[i].func);
 		n->d.obj->__proto__ = Function_prototype;
-		value_object_utils_insert (ps, String_prototype, tounichars (ps, strpro_funcs[i].name), n, 0, 0, 0);
+		value_object_utils_insert2 (ps, String_prototype, strpro_funcs[i].name, n, 0, 0, 0);
 	}
 }
 

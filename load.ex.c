@@ -22,7 +22,6 @@ int utils_global_eval (
 
 #include <sys/stat.h>
 
-
 int
 _utils_global_load (
 	PSTATE* ps, 
@@ -108,7 +107,6 @@ utils_global_load (
 	}
 }
 
-
 int
 utils_global_require (
 	PSTATE* ps,
@@ -135,16 +133,15 @@ utils_global_require (
 	}
 }
 
-
 #define GLOBAL_LOAD 1
 
 #if GLOBAL_LOAD
 void
 load_ex_init (PSTATE* ps, Value* global)
 {
-	value_object_utils_insert (ps, global, tounichars (ps,"load"), func_utils_make_func_value (ps,utils_global_load), 0, 0, 0);
-	value_object_utils_insert (ps, global, tounichars (ps,"include"), func_utils_make_func_value (ps,utils_global_load), 0, 0, 0);
-	value_object_utils_insert (ps, global, tounichars (ps,"require"), func_utils_make_func_value (ps,utils_global_require), 0, 0, 0);
+	value_object_utils_insert2 (ps, global, "load", func_utils_make_func_value (ps,utils_global_load), 0, 0, 0);
+	value_object_utils_insert2 (ps, global, "include", func_utils_make_func_value (ps,utils_global_load), 0, 0, 0);
+	value_object_utils_insert2 (ps, global, "require", func_utils_make_func_value (ps,utils_global_require), 0, 0, 0);
 }
 #endif
 

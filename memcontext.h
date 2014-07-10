@@ -9,11 +9,11 @@
 #include "malloc/dlmalloc.h"
 #endif
 
-struct memcontext {
+typedef struct memcontext {
 #if USE_DLMALLOC
 	void* mymspace;
 #endif
 	void* general_pools[POOL_COUNT];  
-};
+} memcontext;
 #endif
 

@@ -21,8 +21,8 @@ static rb_vreplace_func global_vreplace_func;
 static rb_lookup_helper global_lookup_helper;
 static rb_insert_helper global_insert_helper;
 
-static mpool_t rbtree_pool;
-static mpool_t node_pool;
+static Mempool* rbtree_pool;
+static Mempool* node_pool;
 
 static node
 grandparent (node n)

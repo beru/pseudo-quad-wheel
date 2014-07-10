@@ -7,7 +7,7 @@
 #include "value.h"
 #include "proto.h"
 
-/* push */
+// push
 static int
 arrpto_push (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 {
@@ -23,7 +23,7 @@ arrpto_push (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 	if (curlen < 0) {
 		object_set_length (ps, _this->d.obj, 0);
 	}
-	for (int i = 0; i < argc; ++i) {
+	for (int i=0; i<argc; ++i) {
 		Value* v = value_new (ps);
 		Value* ov = value_object_lookup_array (args, i, NULL);
 		if (!ov) {
@@ -36,7 +36,7 @@ arrpto_push (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 	return 0;
 }
 
-/* pop */
+// pop
 static int
 arrpto_pop (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 {
@@ -52,7 +52,7 @@ arrpto_pop (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 		Value* v = value_object_lookup_array (_this, i, NULL);
 		if (v) {
 			value_copy (*ret, *v);
-			value_erase (*v);	/* diff from ecma, not actually delete the key */
+			value_erase (*v);	// diff from ecma, not actually delete the key
 		}
 		object_set_length (ps, _this->d.obj, i);
 		return 0;
@@ -77,10 +77,10 @@ proto_array_init (PSTATE* ps, Value* global)
 	if (!Array_prototype) {
 		bug ("proto init failed?");
 	}
-	for (int i = 0; i < sizeof (arrpro_funcs) / sizeof (struct st_arrpro_tab); ++i) {
+	for (int i=0; i<sizeof (arrpro_funcs) / sizeof (struct st_arrpro_tab); ++i) {
 		Value* n = func_utils_make_func_value (ps, arrpro_funcs[i].func);
 		n->d.obj->__proto__ = Function_prototype;
-		value_object_utils_insert (ps, Array_prototype, tounichars (ps, arrpro_funcs[i].name), n, 0, 0, 0);
+		value_object_utils_insert2 (ps, Array_prototype, arrpro_funcs[i].name, n, 0, 0, 0);
 	}
 }
 

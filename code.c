@@ -87,7 +87,7 @@ codes_new (PSTATE* ps, int size)
 	return ret;
 }
 
-int
+static int
 codes_insert (PSTATE* ps, OpCodes* c, Eopcode code, void* extra)
 {
 	if (c->code_size - c->code_len <= 0) {
@@ -140,10 +140,10 @@ codes_join4 (PSTATE* ps, OpCodes* a, OpCodes* b, OpCodes* c, OpCodes* d)
 	return codes_join (ps, codes_join (ps, a, b), codes_join (ps, c, d));
 }
 
-#define NEW_CODES(code, extra) do {					\
-    OpCodes* r = codes_new(ps,3);					\
-    codes_insert(ps, r, (code), (void *)(extra));	\
-		return r;									\
+#define NEW_CODES(code, extra) do {						\
+		OpCodes* r = codes_new(ps, 3);					\
+		codes_insert(ps, r, (code), (void*)(extra));	\
+		return r;										\
 	} while(0)
 
 OpCodes*
@@ -211,7 +211,7 @@ code_push_args (PSTATE* ps)
 }
 
 OpCodes*
-code_push_func (PSTATE* ps, struct Func* fun)
+code_push_func (PSTATE* ps, Func* fun)
 {
 	NEW_CODES (OP_PUSHFUN, fun);
 }
@@ -572,8 +572,7 @@ jpinfo_new (PSTATE* ps, int off, int topop)
 void
 code_reserved_replace (PSTATE* ps, OpCodes* ops, int step_len, int break_only, const unichar* desire_label, int topop)
 {
-	int i;
-	for (i = 0; i < ops->code_len; ++i) {
+	for (int i=0; i<ops->code_len; ++i) {
 		ReservedInfo* ri;
 		if (ops->codes[i].op != OP_RESERVED) {
 			continue;
@@ -586,14 +585,13 @@ code_reserved_replace (PSTATE* ps, OpCodes* ops, int step_len, int break_only, c
 				continue;
 			}
 		}
-
 		if (ri->type == RES_CONTINUE) {
 			if (break_only) {
 				ri->topop += topop;
 				continue;
 			}else {
 				int topop = ri->topop;
-				psfree (ri);	/* kill reserved info, replace with other opcode */
+				psfree (ri);	// kill reserved info, replace with other opcode
 				if (topop) {
 					ops->codes[i].data = jpinfo_new (ps, ops->code_len - i, topop);
 					ops->codes[i].op = OP_JMPPOP;
@@ -627,39 +625,65 @@ code_decode (PSTATE* ps, OpCode* op, int currentip)
 		printf ("Bad opcode[%d] at %d\n", op->op, currentip);
 	}
 	printf ("%d:\t%s", currentip, op_names[op->op]);
-	if (op->op == OP_PUSHBOO || op->op == OP_FCALL || op->op == OP_EVAL ||
-		op->op == OP_POP || op->op == OP_ASSIGN ||
-		op->op == OP_RET || op->op == OP_NEWFCALL ||
-		op->op == OP_DELETE || op->op == OP_CHTHIS ||
-		op->op == OP_OBJECT || op->op == OP_ARRAY ||
-		op->op == OP_SHF || op->op == OP_INC || op->op == OP_DEC) {
+	switch (op->op) {
+	case OP_PUSHBOO:
+	case OP_FCALL:
+	case OP_EVAL:
+	case OP_POP:
+	case OP_ASSIGN:
+	case OP_RET:
+	case OP_NEWFCALL:
+	case OP_DELETE:
+	case OP_CHTHIS:
+	case OP_OBJECT:
+	case OP_ARRAY:
+	case OP_SHF:
+	case OP_INC:
+	case OP_DEC:
 		printf ("\t%d\n", (int) op->data);
-	}else if (op->op == OP_PUSHNUM) {
+		break;
+	case OP_PUSHNUM:
 		printf ("\t%g\n", *((double *) op->data));
-	}else if (op->op == OP_PUSHSTR || op->op == OP_LOCAL || op->op == OP_SCATCH) {
+		break;
+	case OP_PUSHSTR:
+	case OP_LOCAL:
+	case OP_SCATCH:
 		printf ("\t\"%s\"\n", tochars (ps, op->data ? op->data : "(NoCatch)"));
-	}else if (op->op == OP_PUSHVAR) {
+		break;
+	case OP_PUSHVAR:
 		printf ("\tvar: \"%s\"\n", tochars (ps, ((FastVar *) op->data)->var.varname));
-	}else if (op->op == OP_PUSHFUN) {
+		break;
+	case OP_PUSHFUN:
 		printf ("\tfunc: 0x%x\n", (int) op->data);
-	}else if (op->op == OP_JTRUE || op->op == OP_JFALSE || op->op == OP_JTRUE_NP || op->op == OP_JFALSE_NP || op->op == OP_JMP) {
+		break;
+	case OP_JTRUE:
+	case OP_JFALSE:
+	case OP_JTRUE_NP:
+	case OP_JFALSE_NP:
+	case OP_JMP:
 		printf ("\t{%d}\t#%d\n", (int) op->data, currentip + (int) op->data);
-	}else if (op->op == OP_JMPPOP) {
-		JmpPopInfo *jp = op->data;
+		break;
+	case OP_JMPPOP: {
+		JmpPopInfo* jp = op->data;
 		printf ("\t{%d},%d\t#%d\n", jp->off, jp->topop, currentip + jp->off);
-	}else if (op->op == OP_STRY) {
-		TryInfo *t = (TryInfo *) op->data;
+		break;
+	}
+	case OP_STRY: {
+		TryInfo* t = (TryInfo *) op->data;
 		printf ("\t{try:%d, catch:%d, final:%d}\n", t->trylen, t->catchlen,
 		t->finallen);
-	}else {
+		break;
+	}
+	default:
 		printf ("\n");
+		break;
 	}
 }
 
 void
 codes_free (PSTATE* ps, OpCodes* ops)
 {
-	/* TODO */
+	// TODO
 	psfree (ops->codes);
 	psfree (ops);
 }
@@ -668,7 +692,7 @@ void
 codes_print (PSTATE* ps, OpCodes* ops)
 {
 	int i = 0;
-	OpCode *opcodes = ops->codes;
+	OpCode* opcodes = ops->codes;
 	int opcodesi = ops->code_len;
 
 	printf ("opcodes count = %d\n", opcodesi);
@@ -678,3 +702,4 @@ codes_print (PSTATE* ps, OpCodes* ops)
 		i++;
 	}
 }
+

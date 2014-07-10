@@ -27,10 +27,11 @@ const unichar* strs_get(void* ec, strs* ss, int i);
  */
 #define MAX_SCOPE	4096
 
-struct Lexer;
-void scope_push(struct Lexer* lexer);
-void scope_pop(struct Lexer* lexer);
-void scope_add_var(struct Lexer* lexer, const unichar* str);
-strs* scope_get_varlist(struct Lexer* lexer);
+typedef struct Lexer Lexer;
+
+void scope_push(Lexer* lexer);
+void scope_pop(Lexer* lexer);
+void scope_add_var(Lexer* lexer, const unichar* str);
+strs* scope_get_varlist(Lexer* lexer);
 
 #endif

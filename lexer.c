@@ -8,64 +8,64 @@
 #include "parser.h"
 #include "error.h"
 #include "regexp.h"
+#include "pstate.h"
 
 #define COMMENT (-128)
 
 static int
-lexer_getchar (Lexer * lex)
+lexer_getchar (Lexer* lex)
 {
-  int c = 0;
-  if (!lex)
-    lexbug ("No lexer init");
-  if (lex->ltype == LT_FILE)
-    {
-      c = fgetc (lex->d.fp);
-      if (c == EOF)
-	c = 0;
-    }
-  else
-    {
-      c = lex->d.str[lex->cur];
-      if (c != 0)
-	lex->cur++;
-    }
-  if (c == '\n')
-    {
-      lex->cur_line++;
-      lex->cur_char = 0;
-    }
-  lex->cur_char++;
-  return c;
+	if (!lex) {
+		lexbug ("No lexer init");
+	}
+	int c = 0;
+	if (lex->ltype == LT_FILE) {
+		c = fgetc (lex->d.fp);
+		if (c == EOF) {
+			c = 0;
+		}
+	}else {
+		c = lex->d.str[lex->cur];
+		if (c != 0) {
+			lex->cur++;
+		}
+	}
+	if (c == '\n') {
+		lex->cur_line++;
+		lex->cur_char = 0;
+	}
+	lex->cur_char++;
+	return c;
 }
 
 static void
-lexer_ungetc (int c, Lexer * lex)
+lexer_ungetc (int c, Lexer* lex)
 {
-  if (!lex)
-    lexbug ("No lexer init");
-  if (!c)
-    return;
-
-  if (lex->ltype == LT_FILE)
-    {
-      ungetc (c, lex->d.fp);
-    }
-  else
-    {
-      lex->cur--;
-      if (c != lex->d.str[lex->cur])
-	abort ();
-    }
-      if (c == '\n')
-        lex->cur_line--;
+	if (!lex) {
+		lexbug ("No lexer init");
+	}
+	if (!c) {
+		return;
+	}
+	if (lex->ltype == LT_FILE) {
+		ungetc (c, lex->d.fp);
+	}else {
+		lex->cur--;
+		if (c != lex->d.str[lex->cur]) {
+			abort ();
+		}
+	}
+	if (c == '\n') {
+		lex->cur_line--;
+	}
 }
 
 static int
-iskey (const char *word)
+iskey (const char* word)
 {
   static struct st_kw
   {
-    const char *name;
+    const char* name;
     int value;
   } keywords[] =
   {
@@ -128,179 +128,158 @@ iskey (const char *word)
     {
     "__debug", __DEBUG}
   };
-  int i;
-  for (i = 0; i < sizeof (keywords) / sizeof (struct st_kw); ++i)
-    {
-      if (strcmp (word, keywords[i].name) == 0)
-	return keywords[i].value;
-    }
-  return 0;
+	for (int i=0; i<sizeof (keywords) / sizeof (struct st_kw); ++i) {
+		if (strcmp (word, keywords[i].name) == 0) {
+			return keywords[i].value;
+		}
+	}
+	return 0;
 }
 
-unichar *
-do_string (Lexer * lex)
+unichar*
+do_string (Lexer* lex)
 {
-  int c = lexer_getchar (lex);
-  int endchar = c;
+	int c = lexer_getchar (lex);
+	int endchar = c;
 
-  UNISTR (65536) unibuf;
+	UNISTR (65536) unibuf;
 
-  unichar *buf = unibuf.unistr;
-  int bufi = 0;
+	unichar* buf = unibuf.unistr;
+	int bufi = 0;
 
-  while (bufi < 65530)
-    {
-      c = lexer_getchar (lex);
-      if (c == EOF || c == 0)
-	{
-	  lexdie ("Unexpected EOF parsing string.\n");
+	while (bufi < 65530) {
+		c = lexer_getchar (lex);
+		if (c == EOF || c == 0) {
+			lexdie ("Unexpected EOF parsing string.\n");
+		}
+		if (c == '\\') {
+			int n = lexer_getchar (lex);
+			switch (n) {
+			case 'b':
+				buf[bufi++] = '\b';
+				break;
+			case 'f':
+				buf[bufi++] = '\f';
+				break;
+			case 'n':
+				buf[bufi++] = '\n';
+				break;
+			case 'r':
+				buf[bufi++] = '\r';
+				break;
+			case 't':
+				buf[bufi++] = '\t';
+				break;
+			case EOF:
+			case 0:
+				lexdie ("Unexpected EOF parsing string.\n");
+			default:
+				buf[bufi++] = n;
+			}
+		}else {
+			buf[bufi++] = c;
+		}
+		if (c == endchar) {
+			bufi--;
+			break;
+		}
 	}
-      if (c == '\\')
-	{
-	  int n = lexer_getchar (lex);
-	  switch (n)
-	    {
-	    case 'b':
-	      buf[bufi++] = '\b';
-	      break;
-	    case 'f':
-	      buf[bufi++] = '\f';
-	      break;
-	    case 'n':
-	      buf[bufi++] = '\n';
-	      break;
-	    case 'r':
-	      buf[bufi++] = '\r';
-	      break;
-	    case 't':
-	      buf[bufi++] = '\t';
-	      break;
-	    case EOF:
-	    case 0:
-	      lexdie ("Unexpected EOF parsing string.\n");
-	    default:
-	      buf[bufi++] = n;
-	    }
-	}
-      else
-	{
-	  buf[bufi++] = c;
-	}
-      if (c == endchar)
-	{
-	  bufi--;
-	  break;
-	}
-    }
-  buf[bufi] = 0;
-  unibuf.len = bufi;
-  return unistrdup (lex->pstate,buf);
+	buf[bufi] = 0;
+	unibuf.len = bufi;
+	return unistrdup (lex->pstate,buf);
 }
 
 
-char *
-do_regex (Lexer * lex, int *flag)
+char*
+do_regex (Lexer* lex, int* flag)
 {
-  char buf[65536];
-  int bufi = 0;
-  char *ret;
+	char buf[65536];
+	int bufi = 0;
+	char* ret;
+	lexer_getchar (lex);		// first '/'
+	while (bufi < 65530) {
+		int c = lexer_getchar (lex);
+		if (c == EOF || c == 0) {
+			lexdie ("Unexpected EOF parsing regular expression.\n");
+		}
+		if (c == '\\') {
+			int n = lexer_getchar (lex);
+			if (n == EOF || c == 0) {
+				lexdie ("Unexpected EOF parsing regular expression.\n");
+			}
 
-  lexer_getchar (lex);		/* first '/' */
-  while (bufi < 65530)
-    {
-      int c = lexer_getchar (lex);
-      if (c == EOF || c == 0)
-	{
-	  lexdie ("Unexpected EOF parsing regular expression.\n");
+			buf[bufi++] = c;
+			buf[bufi++] = n;
+		}else if (c == '/') {
+			buf[bufi] = 0;
+			while (1) {
+				c = lexer_getchar (lex);
+				if (!isalnum (c)) {
+					break;
+				}
+				if (c == 'i') {
+					*flag |= REG_ICASE;
+				}
+			}
+			lexer_ungetc (c, lex);
+			break;
+		}else {
+			buf[bufi++] = c;
+		}
 	}
-      if (c == '\\')
-	{
-	  int n = lexer_getchar (lex);
-	  if (n == EOF || c == 0)
-	    lexdie ("Unexpected EOF parsing regular expression.\n");
-
-	  buf[bufi++] = c;
-	  buf[bufi++] = n;
-	}
-      else if (c == '/')
-	{
-	  buf[bufi] = 0;
-	  while (1)
-	    {
-	      c = lexer_getchar (lex);
-	      if (!isalnum (c))
-		break;
-	      if (c == 'i')
-		*flag |= REG_ICASE;
-	    }
-	  lexer_ungetc (c, lex);
-	  break;
-	}
-      else
-	{
-	  buf[bufi++] = c;
-	}
-    }
-  ret = c_strdup (lex->pstate,buf);
-  return ret;
+	ret = c_strdup (lex->pstate,buf);
+	return ret;
 }
 
-
-unichar *
-do_regex_u (Lexer * lex, int *flag)
+unichar*
+do_regex_u (Lexer* lex, int* flag)
 {
-  unsigned short u[65536];
-  unichar *buf = ushort2unistr(u);
-  int bufi = 0;
-  unichar *ret;
+	unsigned short u[65536];
+	unichar* buf = ushort2unistr(u);
+	int bufi = 0;
+	unichar* ret;
 
-  lexer_getchar (lex);		/* first '/' */
-  while (bufi < 65530)
-    {
-      int c = lexer_getchar (lex);
-      if (c == EOF || c == 0)
-	{
-	  lexdie ("Unexpected EOF parsing regular expression.\n");
+	lexer_getchar (lex);		// first '/'
+	while (bufi < 65530) {
+		int c = lexer_getchar (lex);
+		if (c == EOF || c == 0) {
+			lexdie ("Unexpected EOF parsing regular expression.\n");
+		}
+		if (c == '\\') {
+			int n = lexer_getchar (lex);
+			if (n == EOF || c == 0) {
+				lexdie ("Unexpected EOF parsing regular expression.\n");
+			}
+			buf[bufi++] = c;
+			buf[bufi++] = n;
+		}else if (c == '/') {
+			buf[bufi] = 0;
+			while (1) {
+				c = lexer_getchar (lex);
+				if (!isalnum (c)) {
+					break;
+				}
+				if (c == 'i') {
+					*flag |= REG_ICASE;
+				}
+			}
+			lexer_ungetc (c, lex);
+			break;
+		}else {
+			buf[bufi++] = c;
+		}
 	}
-      if (c == '\\')
-	{
-	  int n = lexer_getchar (lex);
-	  if (n == EOF || c == 0)
-	    lexdie ("Unexpected EOF parsing regular expression.\n");
-
-	  buf[bufi++] = c;
-	  buf[bufi++] = n;
-	}
-      else if (c == '/')
-	{
-	  buf[bufi] = 0;
-	  while (1)
-	    {
-	      c = lexer_getchar (lex);
-	      if (!isalnum (c))
-		break;
-	      if (c == 'i')
-		*flag |= REG_ICASE;
-	    }
-	  lexer_ungetc (c, lex);
-	  break;
-	}
-      else
-	{
-	  buf[bufi++] = c;
-	}
-    }
-  unistrlen(buf) = bufi;
-  ret = unistrdup (lex->pstate,buf);
-  return ret;
+	unistrlen(buf) = bufi;
+	ret = unistrdup (lex->pstate,buf);
+	return ret;
 }
 
 int
-do_sign (Lexer * lex)
+do_sign (Lexer* lex)
 {
   static struct st_sn
   {
-    const char *name;
+    const char* name;
     int len;
     int value;
   } signs[] =
@@ -357,37 +336,36 @@ do_sign (Lexer * lex)
 
   int bufi;
   char buf[4];
-  int i;
-  for (bufi = 0; bufi < 4; ++bufi)
-    {
+  for (bufi=0; bufi<4; ++bufi) {
       int c = lexer_getchar (lex);
-      if (c == 0 || c == '\n')
-	{
+      if (c == 0 || c == '\n') {
 	  buf[bufi++] = c;
 	  break;
 	}
       buf[bufi] = c;
 
     }
-  if (!bufi)
+  if (!bufi) {
     return 0;
+  }
 
-  for (i = 0; i < sizeof (signs) / sizeof (struct st_sn); ++i)
-    {
-      if (bufi < signs[i].len)
+  for (int i=0; i<sizeof (signs) / sizeof (struct st_sn); ++i) {
+      if (bufi < signs[i].len) {
 	continue;
-      if (strncmp (buf, signs[i].name, signs[i].len) == 0)
-	{
+	  }
+      if (strncmp (buf, signs[i].name, signs[i].len) == 0) {
 	  int j;
-	  for (j = bufi - 1; j >= signs[i].len; --j)
+	  for (j=bufi-1; j>=signs[i].len; --j) {
 	    lexer_ungetc (buf[j], lex);
+	  }
 
 	  return signs[i].value;
 	}
-    }
+  }
 
-  for (i = bufi - 1; i >= 1; --i)
+  for (int i=bufi-1; i>=1; --i) {
     lexer_ungetc (buf[i], lex);
+  }
 
   return buf[0];
 }
@@ -402,25 +380,24 @@ do_sign (Lexer * lex)
 	} while(0)
 
 static void
-eat_comment (Lexer * lex)
+eat_comment (Lexer* lex)
 {
-  int c;
-  while ((c = lexer_getchar (lex)))
-    {
-      if (c == '*')
-	{
-	  c = lexer_getchar (lex);
-	  if (c == '/')
-	    return;
-	  lexer_ungetc (c, lex);
+	int c;
+	while ((c = lexer_getchar (lex))) {
+		if (c == '*') {
+			c = lexer_getchar (lex);
+			if (c == '/') {
+				return;
+			}
+			lexer_ungetc (c, lex);
+		}
 	}
-    }
-  lexdie ("Comment reach end of file\n");
+	lexdie ("Comment reach end of file\n");
 }
 
 #if 0
 static int
-_yylex (YYSTYPE * yylvalp, YYLTYPE * yyllocp, Lexer * lex)
+_yylex (YYSTYPE* yylvalp, YYLTYPE* yyllocp, Lexer* lex)
 {
   int c;
   double *db;
@@ -534,7 +511,7 @@ _yylex (YYSTYPE * yylvalp, YYLTYPE * yyllocp, Lexer * lex)
 }
 #else
 static __inline int
-_yylex (YYSTYPE * yylvalp, YYLTYPE * yyllocp, Lexer * lex)
+_yylex (YYSTYPE* yylvalp, YYLTYPE* yyllocp, Lexer* lex)
 {
   int c;
   double *db;
@@ -546,12 +523,10 @@ _yylex (YYSTYPE * yylvalp, YYLTYPE * yyllocp, Lexer * lex)
   void *ps = lex->pstate;
 
   LOCATION_START (yyllocp, lex);
-  while ((c = lexer_getchar (lex)) == ' ' || c == '\t' || c == '\n'
-	 || c == '\r');
+  while ((c = lexer_getchar (lex)) == ' ' || c == '\t' || c == '\n' || c == '\r');
 
-  switch (c)
-    {
-    case '0':
+  switch (c) {
+  case '0':
 	{
 	c = lexer_getchar (lex);
 	if (c == 'x' || c == 'X') {
@@ -595,32 +570,27 @@ end:;
       {
 	int fnum = 0;
 	word[wi++] = c;
-	while (wi < 1020)
-	  {
+	while (wi < 1020) {
 	    c = lexer_getchar (lex);
-	    if (isdigit (c))
+	    if (isdigit (c)) {
 	      word[wi++] = c;
-	    else if (c == '.')
-	      {
-		if (fnum)
+		}else if (c == '.') {
+		if (fnum) {
 		  lexdie ("Number format error");
+		}
 		fnum = 1;
 		word[wi++] = c;
-	      }
-	    else if (c == 'e' || c == 'E')
-	      {
+	    }else if (c == 'e' || c == 'E') {
 		fnum = 1;
 		word[wi++] = c;
 		  c = lexer_getchar (lex);
 		    if (c == '+' || c == '-' || isdigit(c)) {
 		      word[wi++] = c;
-		    } else {
+		    }else {
 		      lexer_ungetc (c, lex);
 			break;
 		    }
-	      }
-	    else
-	      {
+	     }else {
 		lexer_ungetc (c, lex);
 		break;
 	      }
@@ -698,20 +668,21 @@ end:;
       {
 	int r;
 	lexer_ungetc (c, lex);
-	while (wi < 1020)
-	  {
+	while (wi < 1020) {
 	    c = lexer_getchar (lex);
-	    if (!isalnum (c) && c != '_' && c != '$')
+	    if (!isalnum (c) && c != '_' && c != '$') {
 	      break;
+		}
 	    word[wi++] = c;
-	  }
+	}
 	lexer_ungetc (c, lex);
 
 	word[wi] = 0;
 	unibuf.len = wi;
 	r = iskey (tochars (lex->pstate,word));
-	if (r)
+	if (r) {
 	  return r;
+	}
 	*yylvalp = unistrdup (lex->pstate,word);
 	LOCATION_END (yyllocp, lex);
 	return IDENTIFIER;
@@ -719,11 +690,6 @@ end:;
     case '/':
       {
 	int flag;
-#if USE_UREGEX
-	unichar *regtxt;
-#else
-	char *regtxt;
-#endif
 	int d = lexer_getchar (lex);
 	if (d == '/')
 	  {
@@ -748,11 +714,11 @@ end:;
 	    lexer_ungetc (c, lex);
 	    flag = REG_EXTENDED;
 #if USE_UREGEX
-	    regtxt = do_regex_u (lex, &flag);
+		unichar* regtxt = do_regex_u (lex, &flag);
 	    *yylvalp = regex_u_new (lex->pstate, regtxt, unistrlen(regtxt), flag);
 	    unifree (lex->pstate,regtxt);
 #else
-	    regtxt = do_regex (lex, &flag);
+	    char* regtxt = do_regex (lex, &flag);
 	    *yylvalp = regex_new (lex->pstate, regtxt, flag);
 	    c_strfree (lex->pstate, regtxt);
 #endif
@@ -784,14 +750,12 @@ end:;
 #endif
 
 int
-yylex (YYSTYPE * yylvalp, YYLTYPE * yyllocp, PSTATE * pstate)
+yylex (YYSTYPE* yylvalp, YYLTYPE* yyllocp, PSTATE* pstate)
 {
   int ret;
-  do
-    {
+  do {
       ret = _yylex (yylvalp, yyllocp, pstate->lexer);
-    }
-  while (ret == COMMENT);
+  }while (ret == COMMENT);
 /*
 	if (ret < 128 && ret > 0) printf("%c\n", ret);
 	else printf("%d\n", ret);
@@ -800,10 +764,10 @@ yylex (YYSTYPE * yylvalp, YYLTYPE * yyllocp, PSTATE * pstate)
   return ret;
 }
 
-char *lexer_codename(Lexer *lexer);
+char* lexer_codename(Lexer* lexer);
 
 void
-yyerror (YYLTYPE * yylloc, PSTATE * ps, const char *msg)
+yyerror (YYLTYPE* yylloc, PSTATE* ps, const char* msg)
 {
   fprintf (stderr, "%s:%d:[%d-%d]:%s\n", 
 	   lexer_codename(ps->lexer),
@@ -813,3 +777,4 @@ yyerror (YYLTYPE * yylloc, PSTATE * ps, const char *msg)
 }
 
 char *lexer_codename(Lexer *lexer) { return lexer->codename; }
+

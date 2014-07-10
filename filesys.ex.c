@@ -20,15 +20,17 @@
 #include "unichar.h"
 #include "filesys.ex.h"
   
+//#define USE_FILESYS_EX
+
 #ifdef USE_FILESYS_EX
   
-/* global fileoject id, used to access userdata struct from Object */ 
+// global fileoject id, used to access userdata struct from Object
 static udid global_fileobject_udid;
 
-/* static Value *File_prototype;*/ 
+// static Value *File_prototype;
   
-/* here demo how to store user-defined data into Object */ 
-/* first, defined what will be store */ 
+// here demo how to store user-defined data into Object
+// first, defined what will be store
 typedef struct UdFileobj 
 {
 	FILE* fp;
@@ -72,7 +74,7 @@ fileobject_equ (void* data1, void* data2)
 	return (data1 == data2);
 }
 
-/* second, defined a UserDataReg with how to proccess userdefined data */ 
+// second, defined a UserDataReg with how to proccess userdefined data
 static UserDataReg fileobject = {
 	"fileobject", fileobject_free, fileobject_istrue, fileobject_equ 
 };
@@ -247,31 +249,31 @@ File_prototype_eof (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 void 
 filesys_init (PSTATE* ps, Value* global)
 {
-	/* third, register userdata */ 
+	// third, register userdata
 	global_fileobject_udid = userdata_register (ps, &fileobject);
 	if (global_fileobject_udid < 0) {
 		die ("Can not init file system\n");
 	}
 
-	/* File.prototype */ 
+	// File.prototype
 	File_prototype = value_object_utils_new_object (ps);
 	File_prototype->d.obj->__proto__ = Object_prototype;
-	value_object_utils_insert (ps, File_prototype, tounichars (ps, "open"), func_utils_make_func_value (ps, File_prototype_open), 0, 0, 0);
-	value_object_utils_insert (ps, File_prototype, tounichars (ps, "close"), func_utils_make_func_value (ps, File_prototype_close), 0, 0, 0);
-	value_object_utils_insert (ps, File_prototype, tounichars (ps, "gets"), func_utils_make_func_value (ps, File_prototype_gets), 0, 0, 0);
-	value_object_utils_insert (ps, File_prototype, tounichars (ps, "puts"), func_utils_make_func_value (ps, File_prototype_puts), 0, 0, 0);
-	value_object_utils_insert (ps, File_prototype, tounichars (ps, "eof"), func_utils_make_func_value (ps, File_prototype_eof), 0, 0, 0);
+	value_object_utils_insert2 (ps, File_prototype, "open", func_utils_make_func_value (ps, File_prototype_open), 0, 0, 0);
+	value_object_utils_insert2 (ps, File_prototype, "close", func_utils_make_func_value (ps, File_prototype_close), 0, 0, 0);
+	value_object_utils_insert2 (ps, File_prototype, "gets", func_utils_make_func_value (ps, File_prototype_gets), 0, 0, 0);
+	value_object_utils_insert2 (ps, File_prototype, "puts", func_utils_make_func_value (ps, File_prototype_puts), 0, 0, 0);
+	value_object_utils_insert2 (ps, File_prototype, "eof", func_utils_make_func_value (ps, File_prototype_eof), 0, 0, 0);
 	Value* _File = func_utils_make_func_value (ps, File_constructor);
-	value_object_utils_insert (ps, _File, tounichars (ps, "prototype"), File_prototype, 0, 0, 0);
+	value_object_utils_insert2 (ps, _File, "prototype", File_prototype, 0, 0, 0);
 	_File->d.obj->__proto__ = Function_prototype;
-	value_object_utils_insert (ps, global, tounichars (ps, "File"), _File, 1, 1, 0);
+	value_object_utils_insert2 (ps, global, "File", _File, 1, 1, 0);
 }  
-#else	/* #ifdef USE_FILESYS_EX */
+#else	// #ifdef USE_FILESYS_EX
   
-/* no filesystem extern, simply empty init */ 
+// no filesystem extern, simply empty init
 void 
 filesys_init (PSTATE* ps, Value* global)
 {
 	
 }
-#endif	/* #ifdef USE_FILESYS_EX */
+#endif	// #ifdef USE_FILESYS_EX

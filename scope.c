@@ -34,7 +34,7 @@ strs_dup (void* ps, strs* ss)
 	if (!ss) {
 		return n;
 	}
-	for (int i = 0; i < ss->count; ++i) {
+	for (int i=0; i<ss->count; ++i) {
 		strs_push (ps, n, ss->strings[i]);
 	}
 	return n;
@@ -55,15 +55,14 @@ strs_free (void* ps, strs* ss)
 	if (!ss) {
 		return;
 	}
-
-	for (int i = 0; i < ss->count; ++i) {
+	for (int i=0; i<ss->count; ++i) {
 		unifree (ps, ss->strings[i]);
 	}
 	psfree (ss->strings);
 	psfree (ss);
 }
 
-/* lexical scope */
+// lexical scope
 
 #include "lexer.h"
 #define scopes lex->lc.scopes
@@ -95,7 +94,7 @@ scope_add_var (Lexer* lex, const unichar* str)
 	if (scopes[cur_scope] == NULL) {
 		scopes[cur_scope] = strs_new (lex->pstate);
 	}
-	for (int i = 0; i < scopes[cur_scope]->count; ++i) {
+	for (int i=0; i<scopes[cur_scope]->count; ++i) {
 		if (unistrcmp (str, scopes[cur_scope]->strings[i]) == 0) {
 			return;
 		}

@@ -18,40 +18,42 @@
  *    all allocated mem from pool is not zero filled
  */
 
+//#define DONT_USE_POOL
+
 /* how many node in one block */
 #define MP_BLOCK_SIZE	1024
 
 /* per node size is (sizeof(Memnode) + mp->elemsize); */
 typedef struct Memnode {
-	struct Memnode *next;
+	struct Memnode* next;
 	unsigned int esize;
 } Memnode;
 
 typedef struct Memblock {
-	struct Memblock *next;
+	struct Memblock* next;
 } Memblock;
 
 typedef struct Mempool {
 	unsigned int elemsize;
 
-	Memblock *blockhead;
-	Memnode *nodehead;
-  void *mc;
-} *mpool_t;
+	Memblock* blockhead;
+	Memnode* nodehead;
+	void* mc;
+} Mempool;
 
-void mpool_init(struct memcontext *mc);
+void mpool_init(struct memcontext* mc);
 
 /* create a pool, with size and initial element count */
 /* return pool handle */
-mpool_t mpool_create(struct memcontext *mc,unsigned int elemsize);
+Mempool* mpool_create(struct memcontext* mc,unsigned int elemsize);
 
 /* allocate an element from pool */
 /* same as malloc */
-void *mpool_alloc(mpool_t mpool);
+void* mpool_alloc(Mempool* mpool);
 
 /* free an element to pool */
 /* same as free */
-void mpool_free(void *p, mpool_t mpool);
+void mpool_free(void* p, Mempool* mpool);
 
 /* general malloc/free replacement
  * cutting down calling times of malloc and free,
@@ -59,13 +61,13 @@ void mpool_free(void *p, mpool_t mpool);
  * don't know why, if so
  * simply USE DONT_USE_POOL to disable mempool
  */
-void *mm_alloc(void *ps, unsigned int size);
-void *mm_realloc(void *ps, void *p, unsigned int size);
-void mm_free(void *ps, void *p);
+void* mm_alloc(void* ps, unsigned int size);
+void* mm_realloc(void* ps, void* p, unsigned int size);
+void mm_free(void* ps, void* p);
 
 #define POOL_COUNT 8
 
-void *mc_malloc(void *mc, unsigned int size);
-void mc_free(void *mc, void *p);
+void* mc_malloc(void* mc, unsigned int size);
+void mc_free(void* mc, void* p);
 
 #endif
