@@ -15,7 +15,7 @@
 
 // Object constructor
 static int
-Object_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+Object_constructor (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		// new oprator will do the rest
@@ -41,13 +41,13 @@ Object_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 
 // Function.prototype pointed to a empty function
 static int
-Function_prototype_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+Function_prototype_constructor (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	return 0;
 }
 
 static int
-Function_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+Function_constructor (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		// todo, parse the argument, return the new function obj
@@ -63,7 +63,7 @@ Function_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc
 
 // delete array[0], array[1]->array[0]
 static void
-value_array_shift (PSTATE* ps, Value* v)
+value_array_shift (PState* ps, Value* v)
 {
 	if (v->vt != VT_OBJECT) {
 		xbug ("value_array_shift, target is not object\n");
@@ -96,7 +96,7 @@ value_array_shift (PSTATE* ps, Value* v)
 }
 
 void
-fcall_shared_arguments (PSTATE* ps, Value* args, strs* argnames)
+fcall_shared_arguments (PState* ps, Value* args, strs* argnames)
 {
 	if (!argnames) {
 		return;
@@ -134,7 +134,7 @@ UNISTR (0)
 };
 
 void
-fcall_set_callee (PSTATE* ps, Value* args, Value* tocall)
+fcall_set_callee (PState* ps, Value* args, Value* tocall)
 {
 	Value* callee = value_new (ps);
 	value_copy (*callee, *tocall);
@@ -143,7 +143,7 @@ fcall_set_callee (PSTATE* ps, Value* args, Value* tocall)
 
 // Function.prototype.call
 static int
-Function_prototype_call (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+Function_prototype_call (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Execute call as constructor\n");
@@ -191,7 +191,7 @@ Function_prototype_call (PSTATE* ps, Value* args, Value* _this, Value* ret, int 
 
 // Function.prototype.apply
 static int
-Function_prototype_apply (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+Function_prototype_apply (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Execute apply as constructor\n");
@@ -247,7 +247,7 @@ Function_prototype_apply (PSTATE* ps, Value* args, Value* _this, Value* ret, int
 }
 
 static int
-String_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+String_constructor (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		const unichar* nv = EMPTY.unistr;
@@ -284,7 +284,7 @@ String_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 static int
-String_fromCharCode (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+String_fromCharCode (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	UNISTR (4096) unibuf;
 	if (asc) {
@@ -312,7 +312,7 @@ String_fromCharCode (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 static int
-Number_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+Number_constructor (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		double nv = 0.0;
@@ -340,7 +340,7 @@ Number_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 static int
-Array_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+Array_constructor (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	Value* target;
 
@@ -379,7 +379,7 @@ Array_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 static int
-Boolean_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+Boolean_constructor (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		int nv = 0;
@@ -405,7 +405,7 @@ Boolean_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 static int
-RegExp_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+RegExp_constructor (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	Value* target;
 	if (asc) {
@@ -446,7 +446,7 @@ RegExp_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 void
-proto_init (PSTATE* ps, Value* global)
+proto_init (PState* ps, Value* global)
 {
 	// object_prototype the start of protochain
 	Object_prototype = value_object_utils_new_object (ps);

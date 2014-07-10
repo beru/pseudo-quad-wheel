@@ -5,19 +5,19 @@
 #include "pstate.h"
 #include "mempool.h"
 
-static PSTATE*
+static PState*
 pstate_new (void* mc)
 {
-	PSTATE* ps = mc_malloc (mc, sizeof (PSTATE));
-	memset (ps, 0, sizeof (PSTATE));
-	((PSTATE*)ps)->ec.memcontext = mc;
+	PState* ps = mc_malloc (mc, sizeof (PState));
+	memset (ps, 0, sizeof (PState));
+	((PState*)ps)->ec.memcontext = mc;
 	return ps;
 }
 
-PSTATE*
+PState*
 pstate_new_from_file (FILE* fp, memcontext* mc, char* codename)
 {
-	PSTATE* ps = pstate_new (mc);
+	PState* ps = pstate_new (mc);
 	Lexer* l= mm_alloc (ps, sizeof (Lexer));
 	memset (l, 0, sizeof (Lexer));
 	ps->lexer = l;
@@ -30,10 +30,10 @@ pstate_new_from_file (FILE* fp, memcontext* mc, char* codename)
 	return ps;
 }
 
-PSTATE*
+PState*
 pstate_new_from_string (const char* str, memcontext* mc, char* codename)
 {
-	PSTATE* ps = pstate_new (mc);
+	PState* ps = pstate_new (mc);
 	Lexer* l= psmalloc (sizeof (Lexer));
 	memset (l, 0, sizeof (Lexer));
 	ps->lexer = l;
@@ -46,12 +46,12 @@ pstate_new_from_string (const char* str, memcontext* mc, char* codename)
 }
 
 void
-pstate_free (PSTATE* ps)
+pstate_free (PState* ps)
 {
 	// todo: free opcodes
 	psfree (ps->lexer);
 
-	mc_free (((PSTATE*)ps)->ec.memcontext, ps);
+	mc_free (((PState*)ps)->ec.memcontext, ps);
 }
 
 
@@ -60,8 +60,8 @@ void**
 get_general_pools (void* ps)
 {
 #if USE_DLMALLOC
-	if (((PSTATE*) ps)->ec == 0) return 0;
-	return (((PSTATE *) ps)->ec.general_pools);
+	if (((PState*) ps)->ec == 0) return 0;
+	return (((PState *) ps)->ec.general_pools);
 #else
 	return 0;
 #endif
@@ -70,25 +70,25 @@ get_general_pools (void* ps)
 void*
 _ps_memctx_malloc (void* ps, int size)
 {
-	if (((PSTATE*)ps)->ec.memcontext == 0) return malloc(size);
-	return mc_malloc (((PSTATE *) ps)->ec.memcontext, size);
+	if (((PState*)ps)->ec.memcontext == 0) return malloc(size);
+	return mc_malloc (((PState *) ps)->ec.memcontext, size);
 }
 
 void
 _ps_memctx_free (void* ps, void* p)
 {
-	if (((PSTATE*)ps)->ec.memcontext == 0) {
+	if (((PState*)ps)->ec.memcontext == 0) {
 		free(p);
 		return;
 	}else {
-		mc_free (((PSTATE *) ps)->ec.memcontext, p);
+		mc_free (((PState *) ps)->ec.memcontext, p);
 	}
 }
 
 void
 pstate_svc (void* ps, int i, char* s)
 {
-	PSTATE* p = (PSTATE*)ps;
+	PState* p = (PState*)ps;
 	int sp = p->ec.callstacksp-1;
 	int count = 0;
 
@@ -118,18 +118,18 @@ pstate_svc (void* ps, int i, char* s)
 		count++;
 	}
 
-	if (((PSTATE*)ps)->ec.jmpbufsp <= 0) {
+	if (((PState*)ps)->ec.jmpbufsp <= 0) {
 		abort();
 	}
-	longjmp(((PSTATE*)ps)->ec.jmpbuf[((PSTATE*)ps)->ec.jmpbufsp-1], 1);
+	longjmp(((PState*)ps)->ec.jmpbuf[((PState*)ps)->ec.jmpbufsp-1], 1);
 }
 
 
 void**
 pstate_get_general_pools (void* ec)
 {
-	PSTATE* ps = ec;
-	if (((PSTATE*)ps)->ec.memcontext == 0) {
+	PState* ps = ec;
+	if (((PState*)ps)->ec.memcontext == 0) {
 		return 0;
 	}
 	return ps->ec.memcontext->general_pools;
@@ -137,7 +137,7 @@ pstate_get_general_pools (void* ec)
 
 char* pstate_getbuf(void* p)
 {
-	PSTATE* ps = p;
+	PState* ps = p;
 	return ps->buf;
 }
 

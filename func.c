@@ -11,7 +11,7 @@
 #include "pstate.h"
 
 Func*
-func_make_static (PSTATE* ps, strs* args, strs* localvar, OpCodes* ops)
+func_make_static (PState* ps, strs* args, strs* localvar, OpCodes* ops)
 {
 	Func* f = psmalloc (sizeof (Func));
 	memset (f, 0, sizeof (Func));
@@ -23,7 +23,7 @@ func_make_static (PSTATE* ps, strs* args, strs* localvar, OpCodes* ops)
 }
 
 void
-func_init_localvar (PSTATE* ps, Value* arguments, Func* who)
+func_init_localvar (PState* ps, Value* arguments, Func* who)
 {
 	if (who->localnames) {
 		for (int i=0; i<who->localnames->count; ++i) {
@@ -37,17 +37,17 @@ func_init_localvar (PSTATE* ps, Value* arguments, Func* who)
 }
 
 static FuncObj*
-func_make_internal (PSTATE* ps, SSFunc callback)
+func_make_internal (PState* ps, SSFunc callback)
 {
 	Func* f = psmalloc (sizeof (Func));
 	memset (f, 0, sizeof (Func));
-	f->type = FC_BUILDIN;
+	f->type = FC_BUILTIN;
 	f->exec.callback = callback;
 	return funcobj_new (ps, f);
 }
 
 Value*
-func_utils_make_func_value (PSTATE* ps, SSFunc callback)
+func_utils_make_func_value (PState* ps, SSFunc callback)
 {
 	Object* o = object_new (ps);
 	Value* v;

@@ -60,7 +60,7 @@ node_color (node n)
 }
 
 static node
-new_node (PSTATE * ps, void *key, void *value, color node_color, node left,
+new_node (PState * ps, void *key, void *value, color node_color, node left,
 	  node right)
 {
   node result = mpool_alloc (node_pool);

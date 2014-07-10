@@ -16,7 +16,7 @@ static struct st_numpro_tab
 };
 
 void
-proto_number_init (PSTATE* ps, Value* global)
+proto_number_init (PState* ps, Value* global)
 {
 	if (!Number_prototype) {
 		bug ("proto init failed?");

@@ -10,7 +10,7 @@
 #include "func.h"
 #include "number.h"
 
-typedef struct PSTATE PSTATE;
+typedef struct PState PState;
 
 typedef enum {		// type			constructor	Data in Value	Implicit prototype
 	VT_UNDEF,		// undefined	none		none			none 			
@@ -194,59 +194,59 @@ ObjKey* objkey_new(void*, const unichar* strkey, int flag);
 ObjKey* objkey_new2(void*, const char* strkey, int flag);
 ObjKey* objkey_dup(void*, const ObjKey* ori);
 
-IterObj* iterobj_new(PSTATE*);
-FuncObj* funcobj_new(PSTATE*, Func* func);
+IterObj* iterobj_new(PState*);
+FuncObj* funcobj_new(PState*, Func* func);
 
-Object* object_new(PSTATE*);
-void object_free(PSTATE*, Object* obj);
-Object* object_make(PSTATE*, Value* items, int count);
-Object* object_make_array(PSTATE*, Value* items, int count);
+Object* object_new(PState*);
+void object_free(PState*, Object* obj);
+Object* object_make(PState*, Value* items, int count);
+Object* object_make_array(PState*, Value* items, int count);
 
-Value* value_new(PSTATE*);
-Value* value_dup(PSTATE*, Value* v);
-void value_free(PSTATE*, void* data);
-void value_toprimitive(PSTATE*, Value* v);
-void value_tostring(PSTATE*, Value* v);
-void value_tonumber(PSTATE*, Value* v);
-void value_toint32(PSTATE*, Value* v);
-void value_toobject(PSTATE*, Value* v);
+Value* value_new(PState*);
+Value* value_dup(PState*, Value* v);
+void value_free(PState*, void* data);
+void value_toprimitive(PState*, Value* v);
+void value_tostring(PState*, Value* v);
+void value_tonumber(PState*, Value* v);
+void value_toint32(PState*, Value* v);
+void value_toobject(PState*, Value* v);
 int value_istrue(Value* v);
 
-void object_insert(PSTATE*, Object* obj, ObjKey* key, Value* value);
-void value_object_insert(PSTATE*, Value* target, ObjKey* key, Value* value);
-void object_try_extern(PSTATE*, Object* obj, int inserted_index);
+void object_insert(PState*, Object* obj, ObjKey* key, Value* value);
+void value_object_insert(PState*, Value* target, ObjKey* key, Value* value);
+void object_try_extern(PState*, Object* obj, int inserted_index);
 Value* object_lookup(Object *obj, ObjKey *key, int *flag);
 Value* value_object_lookup(Value* target, ObjKey* key, int* flag);
-Value* value_object_key_assign(PSTATE*, Value* target, Value* key, Value* value, int flag);
-void value_object_delete(PSTATE*, Value* target, Value* key);
-void value_subscript(PSTATE*, Value* target, Value* key, Value* ret, int right_val);
+Value* value_object_key_assign(PState*, Value* target, Value* key, Value* value, int flag);
+void value_object_delete(PState*, Value* target, Value* key);
+void value_subscript(PState*, Value* target, Value* key, Value* ret, int right_val);
 int value_key_present(Value* target, ObjKey* k);
-void value_object_getkeys(PSTATE*, Value* target, Value* ret);
+void value_object_getkeys(PState*, Value* target, Value* ret);
 
-ScopeChain* scope_chain_new(PSTATE*, int cnt);
-Value* scope_chain_object_lookup(PSTATE*, ScopeChain* sc, ObjKey* key);
-ScopeChain* scope_chain_dup_next(PSTATE*, ScopeChain* sc, Value* next);
-void scope_chain_free(PSTATE*, ScopeChain* sc);
+ScopeChain* scope_chain_new(PState*, int cnt);
+Value* scope_chain_object_lookup(PState*, ScopeChain* sc, ObjKey* key);
+ScopeChain* scope_chain_dup_next(PState*, ScopeChain* sc, Value* next);
+void scope_chain_free(PState*, ScopeChain* sc);
 
-void object_set_length(PSTATE*, Object* obj, int len);
+void object_set_length(PState*, Object* obj, int len);
 int object_get_length(Object* obj);
 int value_get_length(Value* v);
 Value* value_object_lookup_array(Value* args, int index, int* flag);
 
-Value* value_object_utils_new_object(PSTATE*);
-void object_utils_insert(PSTATE*, Object* obj, const unichar* key, Value* val, int deletable, int writable, int emuable);
-void object_utils_insert2(PSTATE*, Object* obj, const char* key, Value* val, int deletable, int writable, int emuable);
-void value_object_utils_insert(PSTATE*, Value* target, const unichar* key, Value* val, int deletable, int writable, int emuable);
-void value_object_utils_insert2(PSTATE*, Value* target, const char* key, Value* val, int deletable, int writable, int emuable);
+Value* value_object_utils_new_object(PState*);
+void object_utils_insert(PState*, Object* obj, const unichar* key, Value* val, int deletable, int writable, int emuable);
+void object_utils_insert2(PState*, Object* obj, const char* key, Value* val, int deletable, int writable, int emuable);
+void value_object_utils_insert(PState*, Value* target, const unichar* key, Value* val, int deletable, int writable, int emuable);
+void value_object_utils_insert2(PState*, Value* target, const char* key, Value* val, int deletable, int writable, int emuable);
 
-void object_utils_insert_array(PSTATE*, Object* obj, int key, Value* val, int deletable, int writable, int emuable);
-void value_object_utils_insert_array(PSTATE*, Value* target, int key, Value* val, int deletable, int writable, int emuable);
+void object_utils_insert_array(PState*, Object* obj, int key, Value* val, int deletable, int writable, int emuable);
+void value_object_utils_insert_array(PState*, Value* target, int key, Value* val, int deletable, int writable, int emuable);
 
-udid userdata_register(PSTATE*, UserDataReg* udreg);
-UserData* userdata_new(PSTATE*, udid id, void* data);
-void userdata_free(PSTATE*, UserData* ud);
-void userdata_set(PSTATE*, Object* obj, udid id, void* data);
-void* userdata_get(PSTATE*, Object* obj, udid id);
+udid userdata_register(PState*, UserDataReg* udreg);
+UserData* userdata_new(PState*, udid id, void* data);
+void userdata_free(PState*, UserData* ud);
+void userdata_set(PState*, Object* obj, udid id, void* data);
+void* userdata_get(PState*, Object* obj, udid id);
 int userdata_istrue(UserData* ud);
 
 void objects_init(memcontext* mc);

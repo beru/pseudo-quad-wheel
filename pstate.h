@@ -49,7 +49,7 @@ typedef struct execctx {
 } execctx; /* execution context */
 
 /* Program state(context) */
-typedef struct PSTATE {
+typedef struct PState {
 	int err_count;				/* error count after parse */
 	int eval_flag;				/* currently execute in eval function */
  	OpCodes* opcodes;	/* opcodes result(parsing result) */
@@ -61,11 +61,11 @@ typedef struct PSTATE {
 	execctx ec;			/* execution context */
 
 	char buf[1024];
-} PSTATE;
+} PState;
 
-PSTATE* pstate_new_from_file(FILE* fp, memcontext* memcontext, char*);
-PSTATE* pstate_new_from_string(const char* str, memcontext* memcontext, char*);
-void pstate_free(PSTATE* ps);
+PState* pstate_new_from_file(FILE* fp, memcontext* memcontext, char*);
+PState* pstate_new_from_string(const char* str, memcontext* memcontext, char*);
+void pstate_free(PState* ps);
 
 #define Object_prototype ps->ec.Object_prototype
 #define Function_prototype_prototype ps->ec.Function_prototype_prototype
@@ -84,9 +84,9 @@ void pstate_free(PSTATE* ps);
 
 #if 0
 #if USE_DLMALLOC
-#define l_malloc(size)   mspace_malloc(((PSTATE*)ps)->ec.mymspace, size)
-#define l_realloc(mem, size)   mspace_realloc(((PSTATE*)ps-)>ec.mymspace, me, size)
-#define l_free(p) mspace_free(((PSTATE*)ps)->ec.mymspace, p)
+#define l_malloc(size)   mspace_malloc(((PState*)ps)->ec.mymspace, size)
+#define l_realloc(mem, size)   mspace_realloc(((PState*)ps-)>ec.mymspace, me, size)
+#define l_free(p) mspace_free(((PState*)ps)->ec.mymspace, p)
 #else
 #define l_malloc(size)   malloc(size)
 #define l_realloc(mem, size)  realloc(mem,size)

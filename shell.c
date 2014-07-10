@@ -18,7 +18,7 @@
 
 #include <sys/stat.h>
 
-extern int yyparse (PSTATE* ps);
+extern int yyparse (PState* ps);
 
 int
 Usage ()
@@ -29,7 +29,7 @@ Usage ()
 
 int
 _utils_global_load (
-	PSTATE* ps,
+	PState* ps,
     const char* fn,
     ScopeChain* sc,
     Value* _this,
@@ -41,7 +41,7 @@ int
 main (int argc, char** argv)
 {
 	FILE* input = stdin;
-	PSTATE* ps;
+	PState* ps;
 	struct memcontext* mc;
 	int fid = 0;
 

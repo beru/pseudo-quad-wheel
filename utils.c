@@ -148,7 +148,7 @@ print_value (void* ps, Value* v, int quote)
 }
 
 static int
-console_input (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+console_input (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Can not call console.input as a constructor\n");
@@ -170,7 +170,7 @@ console_input (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 static int
-global_exit (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+global_exit (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Can not call exit as a constructor\n");
@@ -187,7 +187,7 @@ global_exit (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 int
-global_print (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+global_print (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Can not call console.log as a constructor\n");
@@ -204,9 +204,9 @@ global_print (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 
-extern int yyparse (PSTATE* ps);
+extern int yyparse (PState* ps);
 void
-pstate_copy_ec (PSTATE* newps, PSTATE* ps)
+pstate_copy_ec (PState* newps, PState* ps)
 {
 	memcpy (&newps->ec, &ps->ec, sizeof (execctx));
 }
@@ -215,7 +215,7 @@ pstate_copy_ec (PSTATE* newps, PSTATE* ps)
 // make evaling script execute in the same context
 int
 utils_global_eval (
-	PSTATE* ps,
+	PState* ps,
 	const char* program,
 	ScopeChain* scope,
 	Value* currentScope,
@@ -224,7 +224,7 @@ utils_global_eval (
 	char* codename
 	)
 {
-	PSTATE* newps = pstate_new_from_string (program, ps->ec.memcontext, codename);
+	PState* newps = pstate_new_from_string (program, ps->ec.memcontext, codename);
 	newps->eval_flag = 1;
 	pstate_copy_ec (newps, ps);
 	int jmpbufsp = newps->ec.jmpbufsp;
@@ -254,7 +254,7 @@ utils_global_eval (
 // here demo how to build console.log
 // first: define console.log function
 static int
-console_log (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+console_log (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Can not call console.log as a constructor\n");
@@ -271,7 +271,7 @@ console_log (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 Value*
-init_program_args (PSTATE* ps, int argc, char** argv)
+init_program_args (PState* ps, int argc, char** argv)
 {
 	Value* ret = value_new (ps);
 	Object* obj = object_new (ps);
@@ -287,7 +287,7 @@ init_program_args (PSTATE* ps, int argc, char** argv)
 }
 
 void
-utils_init (PSTATE* ps, Value* global, int argc, char** argv)
+utils_init (PState* ps, Value* global, int argc, char** argv)
 {
 	// second, build console object
 	Value* console = value_object_utils_new_object (ps);

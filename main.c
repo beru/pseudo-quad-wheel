@@ -18,7 +18,7 @@
 
 #include "proto.global.h"
 
-extern int yyparse (PSTATE * ps);
+extern int yyparse (PState * ps);
 
 int
 Usage ()
@@ -54,7 +54,7 @@ main (int argc, char **argv)
 	reg_init(&mm_alloc, &mm_free);
 	objects_init (mc);
 
-	PSTATE* ps = pstate_new_from_file (input, mc, argv[0]);
+	PState* ps = pstate_new_from_file (input, mc, argv[0]);
 	yyparse (ps);
 
 	if (!ps->err_count) {

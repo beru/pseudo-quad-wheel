@@ -21,7 +21,7 @@ typedef struct Lexer {
 	int cur_line;			/* current line no. */
 	int cur_char;			/* current column no. */
 
-	PSTATE* pstate;
+	PState* pstate;
 	struct {
 		strs* scopes[MAX_SCOPE];
 		int cur_scope;
@@ -29,7 +29,7 @@ typedef struct Lexer {
 	char* codename;
 } Lexer;
 
-int yylex (YYSTYPE* yylvalp, YYLTYPE* yyllocp, PSTATE* pstate);
-void yyerror(YYLTYPE* yylloc, PSTATE* ps, const char* msg);
+int yylex (YYSTYPE* yylvalp, YYLTYPE* yyllocp, PState* pstate);
+void yyerror(YYLTYPE* yylloc, PState* ps, const char* msg);
 
 #endif

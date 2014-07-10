@@ -27,7 +27,7 @@ regex_u_new (void* ps, const unsigned short* str, int len, int compflag)
 }
 
 regex_t*
-regex_new (PSTATE* ps, const char* str, int compflag)
+regex_new (PState* ps, const char* str, int compflag)
 {
 	regex_t* reg = psmalloc (sizeof (regex_t));
 	int ulen = strlen (str);
@@ -51,7 +51,7 @@ regex_new (PSTATE* ps, const char* str, int compflag)
 #else // #if USE_UREGEX
 
 regex_t*
-regex_new (PSTATE* ps, const char* str, int compflag)
+regex_new (PState* ps, const char* str, int compflag)
 {
 	regex_t* reg = malloc (sizeof (regex_t));
 	if (!reg) {

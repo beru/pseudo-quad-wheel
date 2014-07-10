@@ -50,7 +50,7 @@ uniname2cstrdup (void* ps, unsigned short* p)
 // get value
 
 int
-js_utils_get_var_int_value (PSTATE* ps, Value* csc, unichar* unistr, int* d)
+js_utils_get_var_int_value (PState* ps, Value* csc, unichar* unistr, int* d)
 {
 	ObjKey* nk = objkey_new (ps, unistr, OM_READONLY);
 	Value* v = value_object_lookup (csc, nk, 0);
@@ -62,7 +62,7 @@ js_utils_get_var_int_value (PSTATE* ps, Value* csc, unichar* unistr, int* d)
 }
 
 int
-js_utils_get_var_double_value (PSTATE* ps, ScopeChain* sc, Value* csc, unichar* unistr, double* d)
+js_utils_get_var_double_value (PState* ps, ScopeChain* sc, Value* csc, unichar* unistr, double* d)
 {
 	ObjKey* nk = objkey_new (ps, unistr, OM_READONLY);
 	Value* v = value_object_lookup (csc, nk, 0);
@@ -77,7 +77,7 @@ js_utils_get_var_double_value (PSTATE* ps, ScopeChain* sc, Value* csc, unichar* 
 }
 
 int
-js_utils_get_var_userdata_value (PSTATE* ps, Value* csc, unichar* unistr, udid userdataid, void** d)
+js_utils_get_var_userdata_value (PState* ps, Value* csc, unichar* unistr, udid userdataid, void** d)
 {
 	ObjKey* nk = objkey_new (ps, unistr, OM_READONLY);
 	Value* v = value_object_lookup (csc, nk, 0);
@@ -89,7 +89,7 @@ js_utils_get_var_userdata_value (PSTATE* ps, Value* csc, unichar* unistr, udid u
 }
 
 int
-js_utils_get_var_string_value (PSTATE* ps, Value* csc, unichar* unistr, unsigned char** d)
+js_utils_get_var_string_value (PState* ps, Value* csc, unichar* unistr, unsigned char** d)
 {
 	ObjKey* nk = objkey_new (ps, unistr, OM_READONLY);
 	Value* v = value_object_lookup (csc, nk, 0);
@@ -124,7 +124,7 @@ js_utils_get_var_string_value (PSTATE* ps, Value* csc, unichar* unistr, unsigned
 #include "mempool.h"
 #include "memcontext.h"
 
-extern int yyparse (PSTATE* ps);
+extern int yyparse (PState* ps);
 
 typedef struct js_context
 {
@@ -132,7 +132,7 @@ typedef struct js_context
 	ScopeChain* scopechain;
 	memcontext* memcontext;
 	execctx ec;
-	PSTATE* pstate;
+	PState* pstate;
 } js_context;
 
 js_context*
@@ -162,7 +162,7 @@ js_context_exec_first (js_context* globalcontext, int argc, char** argv, char* p
 	objects_init (mc);
 	reg_init(&mm_alloc, &mm_free);
 
-	PSTATE* ps = pstate_new_from_string (program, mc, "-");
+	PState* ps = pstate_new_from_string (program, mc, "-");
 	int jmpbufsp = ps->ec.jmpbufsp;
 	if (setjmp (ps->ec.jmpbuf[ps->ec.jmpbufsp++]) == 0) {
 		yyparse (ps);
@@ -218,7 +218,7 @@ js_context_exec_next (js_context* globalcontext, char* program)
 	Value* csc = globalcontext->scope;
 	ScopeChain* gsc = globalcontext->scopechain;
 	
-	PSTATE* ps = pstate_new_from_string (program, globalcontext->memcontext, "-");
+	PState* ps = pstate_new_from_string (program, globalcontext->memcontext, "-");
 	memcpy (&ps->ec, &globalcontext->ec, sizeof (execctx));
 	int jmpbufsp = ps->ec.jmpbufsp;
 	if (setjmp (ps->ec.jmpbuf[ps->ec.jmpbufsp++]) == 0) {

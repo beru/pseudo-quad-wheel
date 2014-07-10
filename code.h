@@ -132,87 +132,87 @@ typedef struct JmpPopInfo {
 	int topop;
 } JmpPopInfo;
 
-typedef struct PSTATE PSTATE;
+typedef struct PState PState;
 typedef struct Func Func;
 
-OpCodes* code_push_undef(PSTATE*);
-OpCodes* code_push_bool(PSTATE*, int v);
-OpCodes* code_push_num(PSTATE*, double* v);
-OpCodes* code_push_string(PSTATE*, const unichar* str);
-OpCodes* code_push_index(PSTATE*, unichar* varname);
-OpCodes* code_push_args(PSTATE*);
-OpCodes* code_push_this(PSTATE*);
-OpCodes* code_push_func(PSTATE*, Func* fun);
-OpCodes* code_push_regex(PSTATE*, regex_t* reg);
-OpCodes* code_push_top(PSTATE*);
-OpCodes* code_push_top2(PSTATE*);
-OpCodes* code_unref(PSTATE*);
-OpCodes* code_local(PSTATE*, const unichar* varname);
+OpCodes* code_push_undef(PState*);
+OpCodes* code_push_bool(PState*, int v);
+OpCodes* code_push_num(PState*, double* v);
+OpCodes* code_push_string(PState*, const unichar* str);
+OpCodes* code_push_index(PState*, unichar* varname);
+OpCodes* code_push_args(PState*);
+OpCodes* code_push_this(PState*);
+OpCodes* code_push_func(PState*, Func* fun);
+OpCodes* code_push_regex(PState*, regex_t* reg);
+OpCodes* code_push_top(PState*);
+OpCodes* code_push_top2(PState*);
+OpCodes* code_unref(PState*);
+OpCodes* code_local(PState*, const unichar* varname);
 
-OpCodes* code_nop(PSTATE*);
-OpCodes* code_neg(PSTATE*);
-OpCodes* code_pos(PSTATE*);
-OpCodes* code_bnot(PSTATE*);
-OpCodes* code_not(PSTATE*);
-OpCodes* code_mul(PSTATE*);
-OpCodes* code_div(PSTATE*);
-OpCodes* code_mod(PSTATE*);
-OpCodes* code_add(PSTATE*);
-OpCodes* code_sub(PSTATE*);
-OpCodes* code_less(PSTATE*);
-OpCodes* code_greater(PSTATE*);
-OpCodes* code_lessequ(PSTATE*);
-OpCodes* code_greaterequ(PSTATE*);
-OpCodes* code_equal(PSTATE*); 
-OpCodes* code_notequal(PSTATE*);
-OpCodes* code_eequ(PSTATE*);
-OpCodes* code_nneq(PSTATE*);
-OpCodes* code_band(PSTATE*);
-OpCodes* code_bor(PSTATE*);
-OpCodes* code_bxor(PSTATE*);
-OpCodes* code_shf(PSTATE*, int right);
+OpCodes* code_nop(PState*);
+OpCodes* code_neg(PState*);
+OpCodes* code_pos(PState*);
+OpCodes* code_bnot(PState*);
+OpCodes* code_not(PState*);
+OpCodes* code_mul(PState*);
+OpCodes* code_div(PState*);
+OpCodes* code_mod(PState*);
+OpCodes* code_add(PState*);
+OpCodes* code_sub(PState*);
+OpCodes* code_less(PState*);
+OpCodes* code_greater(PState*);
+OpCodes* code_lessequ(PState*);
+OpCodes* code_greaterequ(PState*);
+OpCodes* code_equal(PState*); 
+OpCodes* code_notequal(PState*);
+OpCodes* code_eequ(PState*);
+OpCodes* code_nneq(PState*);
+OpCodes* code_band(PState*);
+OpCodes* code_bor(PState*);
+OpCodes* code_bxor(PState*);
+OpCodes* code_shf(PState*, int right);
 
-OpCodes* code_assign(PSTATE*, int h);
-OpCodes* code_subscript(PSTATE*, int right_val);
-OpCodes* code_inc(PSTATE*, int e);
-OpCodes* code_dec(PSTATE*, int e);
+OpCodes* code_assign(PState*, int h);
+OpCodes* code_subscript(PState*, int right_val);
+OpCodes* code_inc(PState*, int e);
+OpCodes* code_dec(PState*, int e);
 
-OpCodes* code_fcall(PSTATE*, int argc);
-OpCodes* code_newfcall(PSTATE*, int argc);
-OpCodes* code_pop(PSTATE*, int n);
-OpCodes* code_ret(PSTATE*, int n);
-OpCodes* code_object(PSTATE*, int c);
-OpCodes* code_array(PSTATE*, int c);
-OpCodes* code_key(PSTATE*);
-OpCodes* code_next(PSTATE*);
-OpCodes* code_delete(PSTATE*, int n);
-OpCodes* code_chthis(PSTATE*, int n);
+OpCodes* code_fcall(PState*, int argc);
+OpCodes* code_newfcall(PState*, int argc);
+OpCodes* code_pop(PState*, int n);
+OpCodes* code_ret(PState*, int n);
+OpCodes* code_object(PState*, int c);
+OpCodes* code_array(PState*, int c);
+OpCodes* code_key(PState*);
+OpCodes* code_next(PState*);
+OpCodes* code_delete(PState*, int n);
+OpCodes* code_chthis(PState*, int n);
 
-OpCodes* code_jfalse(PSTATE*, int off);
-OpCodes* code_jtrue(PSTATE*, int off);
-OpCodes* code_jfalse_np(PSTATE*, int off);
-OpCodes* code_jtrue_np(PSTATE*, int off);
-OpCodes* code_jmp(PSTATE*, int off);
-OpCodes* code_eval(PSTATE*, int argc);
+OpCodes* code_jfalse(PState*, int off);
+OpCodes* code_jtrue(PState*, int off);
+OpCodes* code_jfalse_np(PState*, int off);
+OpCodes* code_jtrue_np(PState*, int off);
+OpCodes* code_jmp(PState*, int off);
+OpCodes* code_eval(PState*, int argc);
 
-OpCodes* code_throw(PSTATE*);
-OpCodes* code_stry(PSTATE*, int trylen, int catchlen, int finlen);
-OpCodes* code_etry(PSTATE*);
-OpCodes* code_scatch(PSTATE*, const unichar* var);
-OpCodes* code_ecatch(PSTATE*);
-OpCodes* code_sfinal(PSTATE*);
-OpCodes* code_efinal(PSTATE*);
-OpCodes* code_throw(PSTATE*);
-OpCodes* code_with(PSTATE*, int withlen);
-OpCodes* code_ewith(PSTATE*);
-OpCodes* code_typeof(PSTATE*);
+OpCodes* code_throw(PState*);
+OpCodes* code_stry(PState*, int trylen, int catchlen, int finlen);
+OpCodes* code_etry(PState*);
+OpCodes* code_scatch(PState*, const unichar* var);
+OpCodes* code_ecatch(PState*);
+OpCodes* code_sfinal(PState*);
+OpCodes* code_efinal(PState*);
+OpCodes* code_throw(PState*);
+OpCodes* code_with(PState*, int withlen);
+OpCodes* code_ewith(PState*);
+OpCodes* code_typeof(PState*);
 
-OpCodes* code_debug(PSTATE*);
-OpCodes* code_reserved(PSTATE*, int type, unichar* id);
+OpCodes* code_debug(PState*);
+OpCodes* code_reserved(PState*, int type, unichar* id);
 
-OpCodes* codes_join(PSTATE*, OpCodes* a, OpCodes* b);
-OpCodes* codes_join3(PSTATE*, OpCodes* a, OpCodes* b, OpCodes* c);
-OpCodes* codes_join4(PSTATE*, OpCodes* a, OpCodes* b, OpCodes* c, OpCodes* d);
+OpCodes* codes_join(PState*, OpCodes* a, OpCodes* b);
+OpCodes* codes_join3(PState*, OpCodes* a, OpCodes* b, OpCodes* c);
+OpCodes* codes_join4(PState*, OpCodes* a, OpCodes* b, OpCodes* c, OpCodes* d);
 
 /* replace continue/break(coded as OP_RESERVED) jmp
  * |------------------| \
@@ -229,11 +229,11 @@ OpCodes* codes_join4(PSTATE*, OpCodes* a, OpCodes* b, OpCodes* c, OpCodes* d);
  * 3. topop, if not replace in current iter statment, make sure when jmp out of this loop/switch
  *	  corrent stack elems poped(for in always has 2 elem, while switch has 1)
  */
-void code_reserved_replace(PSTATE*, OpCodes* ops, int step_len, int break_only, const unichar* desire_label, int topop);
+void code_reserved_replace(PState*, OpCodes* ops, int step_len, int break_only, const unichar* desire_label, int topop);
 
-void code_decode(PSTATE*, OpCode* op, int currentip);
-void codes_print(PSTATE*, OpCodes* ops);
-OpCodes* codes_new(PSTATE*, int size);
-void codes_free(PSTATE*, OpCodes* ops);
+void code_decode(PState*, OpCode* op, int currentip);
+void codes_print(PState*, OpCodes* ops);
+OpCodes* codes_new(PState*, int size);
+void codes_free(PState*, OpCodes* ops);
 
 #endif

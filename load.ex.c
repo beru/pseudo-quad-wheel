@@ -11,7 +11,7 @@
 #include "eval.h"
 
 int utils_global_eval (
-	PSTATE* ps,
+	PState* ps,
 	const char* program,
 	ScopeChain* scope,
 	Value* currentScope,
@@ -24,7 +24,7 @@ int utils_global_eval (
 
 int
 _utils_global_load (
-	PSTATE* ps, 
+	PState* ps, 
 	const char* fn,
 	ScopeChain* sc, 
 	Value* _this, 
@@ -52,7 +52,7 @@ _utils_global_load (
 
 int
 _utils_global_require (
-	PSTATE* ps, 
+	PState* ps, 
 	const char* mn,
 	ScopeChain* sc, 
 	Value* _this, 
@@ -83,7 +83,7 @@ _utils_global_require (
 
 int
 utils_global_load (
-	PSTATE* ps, 
+	PState* ps, 
 	Value* args, 
 	Value* _this, 
 	Value* ret,
@@ -109,7 +109,7 @@ utils_global_load (
 
 int
 utils_global_require (
-	PSTATE* ps,
+	PState* ps,
 	Value* args,
 	Value* _this,
 	Value* ret,
@@ -137,7 +137,7 @@ utils_global_require (
 
 #if GLOBAL_LOAD
 void
-load_ex_init (PSTATE* ps, Value* global)
+load_ex_init (PState* ps, Value* global)
 {
 	value_object_utils_insert2 (ps, global, "load", func_utils_make_func_value (ps,utils_global_load), 0, 0, 0);
 	value_object_utils_insert2 (ps, global, "include", func_utils_make_func_value (ps,utils_global_load), 0, 0, 0);

@@ -69,64 +69,35 @@ iskey (const char* word)
     int value;
   } keywords[] =
   {
-    {
-    "if", IF},
-    {
-    "else", ELSE},
-    {
-    "for", FOR},
-    {
-    "in", IN},
-    {
-    "while", WHILE},
-    {
-    "do", DO},
-    {
-    "continue", CONTINUE},
-    {
-    "switch", SWITCH},
-    {
-    "case", CASE},
-    {
-    "default", DEFAULT},
-    {
-    "break", BREAK},
-    {
-    "function", FUNC},
-    {
-    "return", RETURN},
-    {
-    "var", LOCAL},
-    {
-    "new", NEW},
-    {
-    "delete", DELETE},
-    {
-    "try", TRY},
-    {
-    "catch", CATCH},
-    {
-    "typeof", TYPEOF},
-    {
-    "throw", THROW},
-    {
-    "finally", FINALLY},
-    {
-    "with", WITH},
-    {
-    "undefined", UNDEF},
-    {
-    "true", _TRUE},
-    {
-    "false", _FALSE},
-    {
-    "this", _THIS},
-    {
-    "arguments", ARGUMENTS},
-    {
-    "void", VOID},
-    {
-    "__debug", __DEBUG}
+    {"if", IF},
+    {"else", ELSE},
+    {"for", FOR},
+    {"in", IN},
+    {"while", WHILE},
+    {"do", DO},
+    {"continue", CONTINUE},
+    {"switch", SWITCH},
+    {"case", CASE},
+    {"default", DEFAULT},
+    {"break", BREAK},
+    {"function", FUNC},
+    {"return", RETURN},
+    {"var", LOCAL},
+    {"new", NEW},
+    {"delete", DELETE},
+    {"try", TRY},
+    {"catch", CATCH},
+    {"typeof", TYPEOF},
+    {"throw", THROW},
+    {"finally", FINALLY},
+    {"with", WITH},
+    {"undefined", UNDEF},
+    {"true", _TRUE},
+    {"false", _FALSE},
+    {"this", _THIS},
+    {"arguments", ARGUMENTS},
+    {"void", VOID},
+    {"__debug", __DEBUG}
   };
 	for (int i=0; i<sizeof (keywords) / sizeof (struct st_kw); ++i) {
 		if (strcmp (word, keywords[i].name) == 0) {
@@ -284,54 +255,30 @@ do_sign (Lexer* lex)
     int value;
   } signs[] =
   {
-    {
-    ">>>=", 4, URSHFAS},
-    {
-    "<<=", 3, LSHFAS},
-    {
-    ">>=", 3, RSHFAS},
-    {
-    "===", 3, EEQU},
-    {
-    "!==", 3, NNEQ},
-    {
-    ">>>", 3, URSHF},
-    {
-    "==", 2, EQU},
-    {
-    "!=", 2, NEQ},
-    {
-    "<=", 2, LEQ},
-    {
-    ">=", 2, GEQ},
-    {
-    "++", 2, INC},
-    {
-    "--", 2, DEC},
-    {
-    "&&", 2, AND},
-    {
-    "||", 2, OR},
-    {
-    "+=", 2, ADDAS},
-    {
-    "-=", 2, MNSAS},
-    {
-    "*=", 2, MULAS},
-    {
-    "/=", 2, DIVAS},
-    {
-    "%=", 2, MODAS},
-    {
-    "&=", 2, BANDAS},
-    {
-    "|=", 2, BORAS},
-    {
-    "^=", 2, BXORAS},
-    {
-    "<<", 2, LSHF},
-    {
-    ">>", 2, RSHF}
+    {">>>=", 4, URSHFAS},
+    {"<<=", 3, LSHFAS},
+    {">>=", 3, RSHFAS},
+    {"===", 3, EEQU},
+    {"!==", 3, NNEQ},
+    {">>>", 3, URSHF},
+    {"==", 2, EQU},
+    {"!=", 2, NEQ},
+    {"<=", 2, LEQ},
+    {">=", 2, GEQ},
+    {"++", 2, INC},
+    {"--", 2, DEC},
+    {"&&", 2, AND},
+    {"||", 2, OR},
+    {"+=", 2, ADDAS},
+    {"-=", 2, MNSAS},
+    {"*=", 2, MULAS},
+    {"/=", 2, DIVAS},
+    {"%=", 2, MODAS},
+    {"&=", 2, BANDAS},
+    {"|=", 2, BORAS},
+    {"^=", 2, BXORAS},
+    {"<<", 2, LSHF},
+    {">>", 2, RSHF}
   };
 
   int bufi;
@@ -351,7 +298,7 @@ do_sign (Lexer* lex)
 
   for (int i=0; i<sizeof (signs) / sizeof (struct st_sn); ++i) {
       if (bufi < signs[i].len) {
-	continue;
+		continue;
 	  }
       if (strncmp (buf, signs[i].name, signs[i].len) == 0) {
 	  int j;
@@ -750,7 +697,7 @@ end:;
 #endif
 
 int
-yylex (YYSTYPE* yylvalp, YYLTYPE* yyllocp, PSTATE* pstate)
+yylex (YYSTYPE* yylvalp, YYLTYPE* yyllocp, PState* pstate)
 {
   int ret;
   do {
@@ -767,7 +714,7 @@ yylex (YYSTYPE* yylvalp, YYLTYPE* yyllocp, PSTATE* pstate)
 char* lexer_codename(Lexer* lexer);
 
 void
-yyerror (YYLTYPE* yylloc, PSTATE* ps, const char* msg)
+yyerror (YYLTYPE* yylloc, PState* ps, const char* msg)
 {
   fprintf (stderr, "%s:%d:[%d-%d]:%s\n", 
 	   lexer_codename(ps->lexer),
@@ -776,5 +723,5 @@ yyerror (YYLTYPE* yylloc, PSTATE* ps, const char* msg)
   ps->err_count++;
 }
 
-char *lexer_codename(Lexer *lexer) { return lexer->codename; }
+char* lexer_codename(Lexer* lexer) { return lexer->codename; }
 

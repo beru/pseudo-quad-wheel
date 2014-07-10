@@ -17,7 +17,7 @@ typedef struct ArgList {
 	struct ArgList* next;
 } ArgList;
 
-static ArgList* arglist_new(PSTATE* ps,const unichar* name)
+static ArgList* arglist_new(PState* ps,const unichar* name)
 {
 	ArgList* a = psmalloc(sizeof(ArgList));
 	memset(a, 0, sizeof(ArgList));
@@ -26,7 +26,7 @@ static ArgList* arglist_new(PSTATE* ps,const unichar* name)
 	return a;
 }
 
-static ArgList* arglist_insert(PSTATE* ps, ArgList* a, const unichar* name)
+static ArgList* arglist_insert(PState* ps, ArgList* a, const unichar* name)
 {
 	ArgList* b = psmalloc(sizeof(ArgList));
 	memset(b, 0, sizeof(ArgList));
@@ -42,7 +42,7 @@ typedef struct ForinVar {
 	OpCodes* lval;
 } ForinVar;
 
-ForinVar* forinvar_new(PSTATE* ps, unichar* varname, OpCodes* local, OpCodes* lval)
+ForinVar* forinvar_new(PState* ps, unichar* varname, OpCodes* local, OpCodes* lval)
 {
 	ForinVar* r = psmalloc(sizeof(ForinVar));
 	r->varname = varname;
@@ -51,7 +51,7 @@ ForinVar* forinvar_new(PSTATE* ps, unichar* varname, OpCodes* local, OpCodes* lv
 	return r;
 }
 
-static OpCodes* make_forin(PSTATE* ps, OpCodes* lval, OpCodes* expr, OpCodes* stat, const unichar* label)
+static OpCodes* make_forin(PState* ps, OpCodes* lval, OpCodes* expr, OpCodes* stat, const unichar* label)
 {
 	OpCodes* init = codes_join(ps, expr, code_key(ps));
 	OpCodes* cond = codes_join3(ps, lval, code_next(ps),
@@ -73,7 +73,7 @@ typedef struct CaseExprStat {
 	int isdefault;
 } CaseExprStat;
 
-CaseExprStat* exprstat_new(PSTATE* ps, OpCodes* expr, OpCodes* stat, int isdef)
+CaseExprStat* exprstat_new(PState* ps, OpCodes* expr, OpCodes* stat, int isdef)
 {
 	CaseExprStat* r = psmalloc(sizeof(CaseExprStat));
 	r->expr = expr;
@@ -89,7 +89,7 @@ typedef struct CaseList {
 	struct CaseList* next;
 } CaseList;
 
-static CaseList* caselist_new(PSTATE* ps, CaseExprStat* es)
+static CaseList* caselist_new(PState* ps, CaseExprStat* es)
 {
 	CaseList* a = psmalloc(sizeof(CaseList));
 	memset(a, 0, sizeof(CaseList));
@@ -98,7 +98,7 @@ static CaseList* caselist_new(PSTATE* ps, CaseExprStat* es)
 	return a;
 }
 
-static CaseList* caselist_insert(PSTATE* ps, CaseList* a, CaseExprStat* es)
+static CaseList* caselist_insert(PState* ps, CaseList* a, CaseExprStat* es)
 {
 	CaseList* b = psmalloc(sizeof(CaseList));
 	memset(b, 0, sizeof(CaseList));
@@ -108,7 +108,7 @@ static CaseList* caselist_insert(PSTATE* ps, CaseList* a, CaseExprStat* es)
 	return a;
 }
 
-static OpCodes* opassign(PSTATE* ps, OpCodes* lval, OpCodes* oprand, OpCodes* op)
+static OpCodes* opassign(PState* ps, OpCodes* lval, OpCodes* oprand, OpCodes* op)
 {
 	OpCodes* ret;
 	if (((OpCodes*)lval)->lvalue_flag == 1) {
@@ -138,8 +138,8 @@ static OpCodes* opassign(PSTATE* ps, OpCodes* lval, OpCodes* oprand, OpCodes* op
 
 %locations			/* location proccess */
 %pure-parser		/* re-entence */
-%parse-param	{PSTATE* ps}
-%lex-param		{PSTATE* ps}
+%parse-param	{PState* ps}
+%lex-param		{PState* ps}
 %error-verbose
 %expect 6			/* if-else shift/reduce
 					   lvalue shift/reduce 

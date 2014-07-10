@@ -13,7 +13,7 @@
 
 // substr
 static int
-strpto_substr (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+strpto_substr (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Execute String.prototype.substr as constructor\n");
@@ -46,7 +46,7 @@ strpto_substr (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 // indexOf
 // todo regex
 static int
-strpto_indexOf (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+strpto_indexOf (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Execute String.prototype.indexOf as constructor\n");
@@ -93,7 +93,7 @@ UNISTR (5)
 
 // match
 static int
-strpto_match (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+strpto_match (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Execute String.prototype.match as constructor\n");
@@ -154,7 +154,7 @@ strpto_match (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 
 // charCodeAt
 static int
-strpto_charCodeAt (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+strpto_charCodeAt (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Execute String.prototype.charCodeAt as constructor\n");
@@ -193,7 +193,7 @@ static struct st_strpro_tab
 };
 
 void
-proto_string_init (PSTATE* ps, Value* global)
+proto_string_init (PState* ps, Value* global)
 {
 	if (!String_prototype) {
 		bug ("proto init failed?");

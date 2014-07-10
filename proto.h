@@ -2,7 +2,7 @@
 #define __PROTO_H__
 
 /* prototype init to global naming space, return Top_object - the default 'this' value */
-void proto_init(PSTATE* ps, Value* global);
+void proto_init(PState* ps, Value* global);
 
 /* extern struct Value* Object_prototype;
 extern Value* Function_prototype;
@@ -13,7 +13,7 @@ extern Value* Array_prototype;
 extern Value* RegExp_prototype;
 extern Value* Top_object;*/
 
-void fcall_shared_arguments(PSTATE*, Value* args, strs* argnames);
-void fcall_set_callee(PSTATE*, Value* args, Value* tocall);
+void fcall_shared_arguments(PState*, Value* args, strs* argnames);
+void fcall_set_callee(PState*, Value* args, Value* tocall);
 
 #endif

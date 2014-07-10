@@ -80,7 +80,7 @@ static UserDataReg fileobject = {
 };
 
 static int
-try_open_file (PSTATE* ps, UdFileobj* udf, Value* args)
+try_open_file (PState* ps, UdFileobj* udf, Value* args)
 {
 	int ret = 0;
 	fileobject_erase (ps, udf);
@@ -106,7 +106,7 @@ try_open_file (PSTATE* ps, UdFileobj* udf, Value* args)
 }
 
 static int
-File_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc) 
+File_constructor (PState* ps, Value* args, Value* _this, Value* ret, int asc) 
 {
 	Value* toacc = NULL;
 	if (asc) {
@@ -125,7 +125,7 @@ File_constructor (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 static int
-File_prototype_open (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+File_prototype_open (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Can not call File.open as constructor\n");
@@ -145,7 +145,7 @@ File_prototype_open (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 static int
-File_prototype_close (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+File_prototype_close (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Can not call File.close as constructor\n");
@@ -163,7 +163,7 @@ File_prototype_close (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc
 }
 
 static int
-File_prototype_gets (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+File_prototype_gets (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Can not call File.gets as constructor\n");
@@ -199,7 +199,7 @@ File_prototype_gets (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 static int
-File_prototype_puts (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+File_prototype_puts (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Can not call File.puts as constructor\n");
@@ -230,7 +230,7 @@ File_prototype_puts (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 static int
-File_prototype_eof (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+File_prototype_eof (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Can not call File.eof as constructor\n");
@@ -247,7 +247,7 @@ File_prototype_eof (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 void 
-filesys_init (PSTATE* ps, Value* global)
+filesys_init (PState* ps, Value* global)
 {
 	// third, register userdata
 	global_fileobject_udid = userdata_register (ps, &fileobject);
@@ -272,7 +272,7 @@ filesys_init (PSTATE* ps, Value* global)
   
 // no filesystem extern, simply empty init
 void 
-filesys_init (PSTATE* ps, Value* global)
+filesys_init (PState* ps, Value* global)
 {
 	
 }

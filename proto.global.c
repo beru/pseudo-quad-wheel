@@ -13,7 +13,7 @@
 #include "utils.h"
 
 static int
-global_exit (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+global_exit (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Can not call exit as a constructor\n");
@@ -30,16 +30,16 @@ global_exit (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 }
 
 int
-global_print (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc);
+global_print (PState* ps, Value* args, Value* _this, Value* ret, int asc);
 
 static int
-global_gc (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+global_gc (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	return 0;
 }
 
 void
-proto_global_init (PSTATE* ps, Value* global, int argc, char** argv)
+proto_global_init (PState* ps, Value* global, int argc, char** argv)
 {
 	value_object_utils_insert2 (ps, global, "exit", func_utils_make_func_value (ps, global_exit), 0, 0, 0);
 

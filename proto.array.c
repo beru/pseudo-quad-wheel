@@ -9,7 +9,7 @@
 
 // push
 static int
-arrpto_push (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+arrpto_push (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Execute Array.prototype.push as constructor\n");
@@ -38,7 +38,7 @@ arrpto_push (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
 
 // pop
 static int
-arrpto_pop (PSTATE* ps, Value* args, Value* _this, Value* ret, int asc)
+arrpto_pop (PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
 		die ("Execute Array.prototype.pop as constructor\n");
@@ -72,7 +72,7 @@ static struct st_arrpro_tab
 };
 
 void
-proto_array_init (PSTATE* ps, Value* global)
+proto_array_init (PState* ps, Value* global)
 {
 	if (!Array_prototype) {
 		bug ("proto init failed?");

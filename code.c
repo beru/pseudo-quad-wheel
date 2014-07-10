@@ -78,7 +78,7 @@ const char* op_names[OP_LASTOP] = {
 #include "pstate.h"
 
 OpCodes*
-codes_new (PSTATE* ps, int size)
+codes_new (PState* ps, int size)
 {
 	OpCodes* ret = psmalloc (sizeof (OpCodes));
 	memset (ret, 0, sizeof (OpCodes));
@@ -88,7 +88,7 @@ codes_new (PSTATE* ps, int size)
 }
 
 static int
-codes_insert (PSTATE* ps, OpCodes* c, Eopcode code, void* extra)
+codes_insert (PState* ps, OpCodes* c, Eopcode code, void* extra)
 {
 	if (c->code_size - c->code_len <= 0) {
 		c->code_size += 100;
@@ -113,7 +113,7 @@ OpCodes* codes_lineno (OpCodes* c, char* codename, int lineno)
 
 
 OpCodes*
-codes_join (PSTATE* ps, OpCodes* a, OpCodes* b)
+codes_join (PState* ps, OpCodes* a, OpCodes* b)
 {
 	OpCodes* ret = codes_new (ps, a->code_len + b->code_len);
 	memcpy (ret->codes, a->codes, a->code_len * sizeof (OpCode));
@@ -129,13 +129,13 @@ codes_join (PSTATE* ps, OpCodes* a, OpCodes* b)
 }
 
 OpCodes*
-codes_join3 (PSTATE* ps, OpCodes* a, OpCodes* b, OpCodes* c)
+codes_join3 (PState* ps, OpCodes* a, OpCodes* b, OpCodes* c)
 {
 	return codes_join (ps, codes_join (ps, a, b), c);
 }
 
 OpCodes*
-codes_join4 (PSTATE* ps, OpCodes* a, OpCodes* b, OpCodes* c, OpCodes* d)
+codes_join4 (PState* ps, OpCodes* a, OpCodes* b, OpCodes* c, OpCodes* d)
 {
 	return codes_join (ps, codes_join (ps, a, b), codes_join (ps, c, d));
 }
@@ -147,31 +147,31 @@ codes_join4 (PSTATE* ps, OpCodes* a, OpCodes* b, OpCodes* c, OpCodes* d)
 	} while(0)
 
 OpCodes*
-code_push_undef (PSTATE* ps)
+code_push_undef (PState* ps)
 {
 	NEW_CODES (OP_PUSHUND, 0);
 }
 
 OpCodes*
-code_push_bool (PSTATE* ps, int v)
+code_push_bool (PState* ps, int v)
 {
 	NEW_CODES (OP_PUSHBOO, v);
 }
 
 OpCodes*
-code_push_num (PSTATE* ps, double* v)
+code_push_num (PState* ps, double* v)
 {
 	NEW_CODES (OP_PUSHNUM, v);
 }
 
 OpCodes*
-code_push_string (PSTATE* ps, const unichar* str)
+code_push_string (PState* ps, const unichar* str)
 {
 	NEW_CODES (OP_PUSHSTR, str);
 }
 
 OpCodes*
-code_push_index (PSTATE* ps, unichar* varname)
+code_push_index (PState* ps, unichar* varname)
 {
 	FastVar* n = psmalloc (sizeof (FastVar));
 	memset (n, 0, sizeof (FastVar));
@@ -181,307 +181,307 @@ code_push_index (PSTATE* ps, unichar* varname)
 }
 
 OpCodes*
-code_push_this (PSTATE* ps)
+code_push_this (PState* ps)
 {
 	NEW_CODES (OP_PUSHTHS, 0);
 }
 
 OpCodes*
-code_push_top (PSTATE* ps)
+code_push_top (PState* ps)
 {
 	NEW_CODES (OP_PUSHTOP, 0);
 }
 
 OpCodes*
-code_push_top2 (PSTATE* ps)
+code_push_top2 (PState* ps)
 {
 	NEW_CODES (OP_PUSHTOP2, 0);
 }
 
 OpCodes*
-code_unref (PSTATE* ps)
+code_unref (PState* ps)
 {
 	NEW_CODES (OP_UNREF, 0);
 }
 
 OpCodes*
-code_push_args (PSTATE* ps)
+code_push_args (PState* ps)
 {
 	NEW_CODES (OP_PUSHARG, 0);
 }
 
 OpCodes*
-code_push_func (PSTATE* ps, Func* fun)
+code_push_func (PState* ps, Func* fun)
 {
 	NEW_CODES (OP_PUSHFUN, fun);
 }
 
 OpCodes*
-code_push_regex (PSTATE* ps, regex_t* reg)
+code_push_regex (PState* ps, regex_t* reg)
 {
 	NEW_CODES (OP_PUSHREG, reg);
 }
 
 OpCodes*
-code_local (PSTATE* ps, const unichar* varname)
+code_local (PState* ps, const unichar* varname)
 {
 	NEW_CODES (OP_LOCAL, varname);
 }
 
 OpCodes*
-code_nop (PSTATE* ps)
+code_nop (PState* ps)
 {
 	NEW_CODES (OP_NOP, 0);
 }
 
 OpCodes*
-code_neg (PSTATE* ps)
+code_neg (PState* ps)
 {
 	NEW_CODES (OP_NEG, 0);
 }
 
 OpCodes*
-code_pos (PSTATE* ps)
+code_pos (PState* ps)
 {
 	NEW_CODES (OP_POS, 0);
 }
 
 OpCodes*
-code_bnot (PSTATE* ps)
+code_bnot (PState* ps)
 {
 	NEW_CODES (OP_BNOT, 0);
 }
 
 OpCodes*
-code_not (PSTATE* ps)
+code_not (PState* ps)
 {
 	NEW_CODES (OP_NOT, 0);
 }
 
 OpCodes*
-code_mul (PSTATE* ps)
+code_mul (PState* ps)
 {
 	NEW_CODES (OP_MUL, 0);
 }
 
 OpCodes*
-code_div (PSTATE* ps)
+code_div (PState* ps)
 {
 	NEW_CODES (OP_DIV, 0);
 }
 
 OpCodes*
-code_mod (PSTATE* ps)
+code_mod (PState* ps)
 {
 	NEW_CODES (OP_MOD, 0);
 }
 
 OpCodes*
-code_add (PSTATE* ps)
+code_add (PState* ps)
 {
 	NEW_CODES (OP_ADD, 0);
 }
 
 OpCodes*
-code_sub (PSTATE* ps)
+code_sub (PState* ps)
 {
 	NEW_CODES (OP_SUB, 0);
 }
 
 OpCodes*
-code_less (PSTATE* ps)
+code_less (PState* ps)
 {
 	NEW_CODES (OP_LESS, 0);
 }
 
 OpCodes*
-code_greater (PSTATE* ps)
+code_greater (PState* ps)
 {
 	NEW_CODES (OP_GREATER, 0);
 }
 
 OpCodes*
-code_lessequ (PSTATE* ps)
+code_lessequ (PState* ps)
 {
 	NEW_CODES (OP_LESSEQU, 0);
 }
 
 OpCodes*
-code_greaterequ (PSTATE* ps)
+code_greaterequ (PState* ps)
 {
 	NEW_CODES (OP_GREATEREQU, 0);
 }
 
 OpCodes*
-code_equal (PSTATE* ps)
+code_equal (PState* ps)
 {
 	NEW_CODES (OP_EQUAL, 0);
 }
 
 OpCodes*
-code_notequal (PSTATE* ps)
+code_notequal (PState* ps)
 {
 	NEW_CODES (OP_NOTEQUAL, 0);
 }
 
 OpCodes*
-code_eequ (PSTATE* ps)
+code_eequ (PState* ps)
 {
 	NEW_CODES (OP_STRICTEQU, 0);
 }
 
 OpCodes*
-code_nneq (PSTATE* ps)
+code_nneq (PState* ps)
 {
 	NEW_CODES (OP_STRICTNEQ, 0);
 }
 
 OpCodes*
-code_band (PSTATE* ps)
+code_band (PState* ps)
 {
 	NEW_CODES (OP_BAND, 0);
 }
 
 OpCodes*
-code_bor (PSTATE* ps)
+code_bor (PState* ps)
 {
 	NEW_CODES (OP_BOR, 0);
 }
 
 OpCodes*
-code_bxor (PSTATE* ps)
+code_bxor (PState* ps)
 {
 	NEW_CODES (OP_BXOR, 0);
 }
 
 OpCodes*
-code_shf (PSTATE* ps, int right)
+code_shf (PState* ps, int right)
 {
 	NEW_CODES (OP_SHF, right);
 }
 
 OpCodes*
-code_assign (PSTATE* ps, int h)
+code_assign (PState* ps, int h)
 {
 	NEW_CODES (OP_ASSIGN, h);
 }
 
 OpCodes*
-code_subscript (PSTATE* ps, int right_val)
+code_subscript (PState* ps, int right_val)
 {
 	NEW_CODES (OP_SUBSCRIPT, right_val);
 }
 
 OpCodes*
-code_inc (PSTATE* ps, int e)
+code_inc (PState* ps, int e)
 {
 	NEW_CODES (OP_INC, e);
 }
 
 OpCodes*
-code_dec (PSTATE* ps, int e)
+code_dec (PState* ps, int e)
 {
 	NEW_CODES (OP_DEC, e);
 }
 
 OpCodes*
-code_fcall (PSTATE* ps, int argc)
+code_fcall (PState* ps, int argc)
 {
 	NEW_CODES (OP_FCALL, argc);
 }
 
 OpCodes*
-code_newfcall (PSTATE* ps, int argc)
+code_newfcall (PState* ps, int argc)
 {
 	NEW_CODES (OP_NEWFCALL, argc);
 }
 
 OpCodes*
-code_ret (PSTATE* ps, int n)
+code_ret (PState* ps, int n)
 {
 	NEW_CODES (OP_RET, n);
 }
 
 OpCodes*
-code_delete (PSTATE* ps, int n)
+code_delete (PState* ps, int n)
 {
 	NEW_CODES (OP_DELETE, n);
 }
 
 OpCodes*
-code_chthis (PSTATE* ps, int n)
+code_chthis (PState* ps, int n)
 {
 	NEW_CODES (OP_CHTHIS, n);
 }
 
 OpCodes*
-code_pop (PSTATE* ps, int n)
+code_pop (PState* ps, int n)
 {
 	NEW_CODES (OP_POP, n);
 }
 
 OpCodes*
-code_jfalse (PSTATE* ps, int off)
+code_jfalse (PState* ps, int off)
 {
 	NEW_CODES (OP_JFALSE, off);
 }
 
 OpCodes*
-code_jtrue (PSTATE* ps, int off)
+code_jtrue (PState* ps, int off)
 {
 	NEW_CODES (OP_JTRUE, off);
 }
 
 OpCodes*
-code_jfalse_np (PSTATE* ps, int off)
+code_jfalse_np (PState* ps, int off)
 {
 	NEW_CODES (OP_JFALSE_NP, off);
 }
 
 OpCodes*
-code_jtrue_np (PSTATE* ps, int off)
+code_jtrue_np (PState* ps, int off)
 {
 	NEW_CODES (OP_JTRUE_NP, off);
 }
 
 OpCodes*
-code_jmp (PSTATE* ps, int off)
+code_jmp (PState* ps, int off)
 {
 	NEW_CODES (OP_JMP, off);
 }
 
 OpCodes*
-code_object (PSTATE* ps, int c)
+code_object (PState* ps, int c)
 {
 	NEW_CODES (OP_OBJECT, c);
 }
 
 OpCodes*
-code_array (PSTATE* ps, int c)
+code_array (PState* ps, int c)
 {
 	NEW_CODES (OP_ARRAY, c);
 }
 
 OpCodes*
-code_key (PSTATE* ps)
+code_key (PState* ps)
 {
 	NEW_CODES (OP_KEY, 0);
 }
 
 OpCodes*
-code_next (PSTATE* ps)
+code_next (PState* ps)
 {
 	NEW_CODES (OP_NEXT, 0);
 }
 
 OpCodes*
-code_eval (PSTATE* ps, int argc)
+code_eval (PState* ps, int argc)
 {
 	NEW_CODES (OP_EVAL, argc);
 }
 
 OpCodes*
-code_stry (PSTATE* ps, int trylen, int catchlen, int finlen)
+code_stry (PState* ps, int trylen, int catchlen, int finlen)
 {
 	TryInfo* ti = psmalloc (sizeof (TryInfo));
 	ti->trylen = trylen;
@@ -491,67 +491,67 @@ code_stry (PSTATE* ps, int trylen, int catchlen, int finlen)
 }
 
 OpCodes*
-code_etry (PSTATE* ps)
+code_etry (PState* ps)
 {
 	NEW_CODES (OP_ETRY, 0);
 }
 
 OpCodes*
-code_scatch (PSTATE* ps, const unichar* var)
+code_scatch (PState* ps, const unichar* var)
 {
 	NEW_CODES (OP_SCATCH, var);
 }
 
 OpCodes*
-code_ecatch (PSTATE* ps)
+code_ecatch (PState* ps)
 {
 	NEW_CODES (OP_ECATCH, 0);
 }
 
 OpCodes*
-code_sfinal (PSTATE* ps)
+code_sfinal (PState* ps)
 {
 	NEW_CODES (OP_SFINAL, 0);
 }
 
 OpCodes*
-code_efinal (PSTATE* ps)
+code_efinal (PState* ps)
 {
 	NEW_CODES (OP_EFINAL, 0);
 }
 
 OpCodes*
-code_throw (PSTATE* ps)
+code_throw (PState* ps)
 {
 	NEW_CODES (OP_THROW, 0);
 }
 
 OpCodes*
-code_with (PSTATE* ps, int withlen)
+code_with (PState* ps, int withlen)
 {
 	NEW_CODES (OP_WITH, withlen);
 }
 
 OpCodes*
-code_ewith (PSTATE* ps)
+code_ewith (PState* ps)
 {
 	NEW_CODES (OP_EWITH, 0);
 }
 
 OpCodes*
-code_typeof (PSTATE* ps)
+code_typeof (PState* ps)
 {
 	NEW_CODES (OP_TYPEOF, 0);
 }
 
 OpCodes*
-code_debug (PSTATE* ps)
+code_debug (PState* ps)
 {
 	NEW_CODES (OP_DEBUG, 0);
 }
 
 OpCodes*
-code_reserved (PSTATE* ps, int type, unichar* id)
+code_reserved (PState* ps, int type, unichar* id)
 {
 	ReservedInfo* ri = psmalloc (sizeof (ReservedInfo));
 	ri->type = type;
@@ -561,7 +561,7 @@ code_reserved (PSTATE* ps, int type, unichar* id)
 }
 
 JmpPopInfo*
-jpinfo_new (PSTATE* ps, int off, int topop)
+jpinfo_new (PState* ps, int off, int topop)
 {
 	JmpPopInfo* r = psmalloc (sizeof (JmpPopInfo));
 	r->off = off;
@@ -570,7 +570,7 @@ jpinfo_new (PSTATE* ps, int off, int topop)
 }
 
 void
-code_reserved_replace (PSTATE* ps, OpCodes* ops, int step_len, int break_only, const unichar* desire_label, int topop)
+code_reserved_replace (PState* ps, OpCodes* ops, int step_len, int break_only, const unichar* desire_label, int topop)
 {
 	for (int i=0; i<ops->code_len; ++i) {
 		ReservedInfo* ri;
@@ -619,7 +619,7 @@ code_reserved_replace (PSTATE* ps, OpCodes* ops, int step_len, int break_only, c
 }
 
 void
-code_decode (PSTATE* ps, OpCode* op, int currentip)
+code_decode (PState* ps, OpCode* op, int currentip)
 {
 	if (op->op < 0 || op->op >= OP_LASTOP) {
 		printf ("Bad opcode[%d] at %d\n", op->op, currentip);
@@ -681,7 +681,7 @@ code_decode (PSTATE* ps, OpCode* op, int currentip)
 }
 
 void
-codes_free (PSTATE* ps, OpCodes* ops)
+codes_free (PState* ps, OpCodes* ops)
 {
 	// TODO
 	psfree (ops->codes);
@@ -689,7 +689,7 @@ codes_free (PSTATE* ps, OpCodes* ops)
 }
 
 void
-codes_print (PSTATE* ps, OpCodes* ops)
+codes_print (PState* ps, OpCodes* ops)
 {
 	int i = 0;
 	OpCode* opcodes = ops->codes;
