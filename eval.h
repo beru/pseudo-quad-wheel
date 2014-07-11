@@ -11,8 +11,10 @@
  * 5. _this, where 'this' indicated
  * 6. vret, return value
  */
-int eval(PState* ps, OpCodes* opcodes, 
-		 ScopeChain* scope, Value* currentScope,
+int eval(PState* ps,
+		OpCodes* opcodes, 
+		 ScopeChain* scope,
+		 Value* currentScope,
 		 Value* _this,
 		 Value* vret);
 		 
