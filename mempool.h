@@ -41,11 +41,11 @@ typedef struct Mempool {
 	void* mc;
 } Mempool;
 
-void mpool_init(struct memcontext* mc);
+void mpool_init(memcontext* mc);
 
 /* create a pool, with size and initial element count */
 /* return pool handle */
-Mempool* mpool_create(struct memcontext* mc,unsigned int elemsize);
+Mempool* mpool_create(memcontext* mc, unsigned int elemsize);
 
 /* allocate an element from pool */
 /* same as malloc */

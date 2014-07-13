@@ -22,20 +22,18 @@ static const char* INF = (const char*) _numinf;
 
 #endif /*  */
   
-double
-ieee_makeinf (int i)
+double ieee_makeinf(int i)
 {
-	double r = *(double*) INF;
+	double r = *(double*)INF;
 	if (i < 0) {
 		r = -r;
 	}
 	return r;
 }
 
-double
-ieee_makenan () 
+double ieee_makenan() 
 {
-	return *(double*) NAN;
+	return *(double*)NAN;
 } 
 
 /*
@@ -48,8 +46,8 @@ ieee_makenan ()
 
 static const double pow10[] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 };
 
-static void
-strreverse (unichar* begin, unichar* end) 
+static
+void strreverse(unichar* begin, unichar* end) 
 {
 	unichar aux;
 	while (end > begin) {
@@ -59,8 +57,7 @@ strreverse (unichar* begin, unichar* end)
 	}
 }
 
-void
-num_itoa10 (int value, unichar* str) 
+void num_itoa10 (int value, unichar* str) 
 {
 	unichar* wstr = str;
 	
@@ -70,7 +67,7 @@ num_itoa10 (int value, unichar* str)
 	// Conversion. Number is reversed.
 	do {
 		*wstr++ = (unichar) (48 + (uvalue % 10));
-	}while (uvalue /= 10);
+	} while (uvalue /= 10);
 	
 	if (value < 0) {
 		*wstr++ = '-';
@@ -79,32 +76,30 @@ num_itoa10 (int value, unichar* str)
 	unistrlen (str) = wstr - str;
 	
 	// Reverse string
-	strreverse (str, wstr - 1);
+	strreverse(str, wstr - 1);
 }
 
-void
-num_uitoa10 (unsigned int value, unichar* str) 
+void num_uitoa10(unsigned int value, unichar* str) 
 {
 	unichar* wstr = str;
 
 	// Conversion. Number is reversed.
 	do {
 		*wstr++ = (unichar) (48 + (value % 10));
-	}while (value /= 10);
+	} while (value /= 10);
 
 	unistrlen (str) = wstr - str;
 
 	// Reverse string
-	strreverse (str, wstr - 1);
+	strreverse(str, wstr - 1);
 }
 
 // This is near identical to modp_dtoa above
 //   The differnce is noted below
-void
-num_dtoa2 (double value, unichar* str, int prec) 
+void num_dtoa2(double value, unichar* str, int prec) 
 {
 	// if input is larger than thres_max, revert to exponential
-	const double thres_max = (double) (0x7FFFFFFF);
+	const double thres_max = (double)(0x7FFFFFFF);
 	
 	int count;
 	double diff = 0.0;
@@ -162,7 +157,7 @@ num_dtoa2 (double value, unichar* str, int prec)
 	// normal printf behavior is to print EVERY whole number digit which can be 100s of characters overflowing your buffers == bad
 	if (value > thres_max) {
 		char bstr[64];
-		sprintf (bstr, "%e", neg ? -value : value);
+		sprintf(bstr, "%e", neg ? -value : value);
 		int i;
 		for (i=0; bstr[i]; ++i) {
 			str[i] = bstr[i];
@@ -211,13 +206,13 @@ num_dtoa2 (double value, unichar* str, int prec)
 	/* Conversion. Number is reversed. */ 
 	do {
 		*wstr++ = (unichar) (48 + (whole % 10));
-	}while (whole /= 10);
+	} while (whole /= 10);
 	
 	if (neg) {
 		*wstr++ = '-';
 	}
 	unistrlen (str) = wstr - str;
-	strreverse (str, wstr - 1);
+	strreverse(str, wstr - 1);
 
 }
 

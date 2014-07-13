@@ -29,7 +29,7 @@ typedef struct Lexer {
 	char* codename;
 } Lexer;
 
-int yylex (YYSTYPE* yylvalp, YYLTYPE* yyllocp, PState* pstate);
-void yyerror(YYLTYPE* yylloc, PState* ps, const char* msg);
+int yylex(YYSTYPE* yylvalp, YYLTYPE* yyllocp, PState* pstate);
+void yyerro(YYLTYPE* yylloc, PState* ps, const char* msg);
 
 #endif

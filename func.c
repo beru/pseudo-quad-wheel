@@ -10,11 +10,10 @@
 #include "unichar.h"
 #include "pstate.h"
 
-Func*
-func_make_static (PState* ps, strs* args, strs* localvar, OpCodes* ops)
+Func* func_make_static(PState* ps, strs* args, strs* localvar, OpCodes* ops)
 {
-	Func* f = psmalloc (sizeof (Func));
-	memset (f, 0, sizeof (Func));
+	Func* f = psmalloc(sizeof(Func));
+	memset(f, 0, sizeof(Func));
 	f->type = FC_NORMAL;
 	f->exec.opcodes = ops;
 	f->argnames = args;
@@ -22,40 +21,38 @@ func_make_static (PState* ps, strs* args, strs* localvar, OpCodes* ops)
 	return f;
 }
 
-void
-func_init_localvar (PState* ps, Value* arguments, Func* who)
+void func_init_localvar(PState* ps, Value* arguments, Func* who)
 {
 	if (who->localnames) {
 		for (int i=0; i<who->localnames->count; ++i) {
-			const unichar* argkey = strs_get (ps, who->localnames, i);
+			const unichar* argkey = strs_get(ps, who->localnames, i);
 			if (argkey) {
-				ObjKey* strkey = objkey_new (ps, argkey, OM_DONTEMU);
-				value_object_insert (ps, arguments, strkey, value_new (ps));
+				ObjKey* strkey = objkey_new(ps, argkey, OM_DONTEMU);
+				value_object_insert(ps, arguments, strkey, value_new (ps));
 			}
 		}
 	}
 }
 
-static FuncObj*
-func_make_internal (PState* ps, SSFunc callback)
+static
+FuncObj* func_make_internal(PState* ps, SSFunc callback)
 {
-	Func* f = psmalloc (sizeof (Func));
-	memset (f, 0, sizeof (Func));
+	Func* f = psmalloc(sizeof(Func));
+	memset(f, 0, sizeof(Func));
 	f->type = FC_BUILTIN;
 	f->exec.callback = callback;
-	return funcobj_new (ps, f);
+	return funcobj_new(ps, f);
 }
 
-Value*
-func_utils_make_func_value (PState* ps, SSFunc callback)
+Value* func_utils_make_func_value(PState* ps, SSFunc callback)
 {
-	Object* o = object_new (ps);
+	Object* o = object_new(ps);
 	Value* v;
 	o->ot = OT_FUNCTION;
-	o->d.fobj = func_make_internal (ps, callback);
+	o->d.fobj = func_make_internal(ps, callback);
 
-	v = value_new (ps);
-	value_make_object (*v, o);
+	v = value_new(ps);
+	value_make_object(*v, o);
 	return v;
 }
 

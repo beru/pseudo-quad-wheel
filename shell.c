@@ -20,15 +20,13 @@
 
 extern int yyparse (PState* ps);
 
-int
-Usage ()
+int Usage()
 {
-	fprintf (stderr, "Usage: smallscript [input file] [arguments]\n");
+	fprintf(stderr, "Usage: smallscript [input file] [arguments]\n");
 	return -1;
 }
 
-int
-_utils_global_load (
+int _utils_global_load(
 	PState* ps,
     const char* fn,
     ScopeChain* sc,
@@ -37,58 +35,57 @@ _utils_global_load (
     int asc
 );
 
-int
-main (int argc, char** argv)
+int main(int argc, char** argv)
 {
 	FILE* input = stdin;
 	PState* ps;
-	struct memcontext* mc;
+	memcontext* mc;
 	int fid = 0;
-
+	
 	argv++;
 	argc--;
-
+	
 	/* subsystem init */
-	mc = malloc (sizeof (struct memcontext));
-	mc->mymspace = (void*)create_mspace (0, 0);
+	mc = malloc(sizeof(memcontext));
+	mc->mymspace = (void*)create_mspace(0, 0);
 
-	mpool_init (mc);		/* general mempool */
+	mpool_init(mc);		/* general mempool */
 	reg_init(mm_alloc, mm_free);
-	objects_init (mc);
+	objects_init(mc);
 
 	ps = pstate_new_from_string("", mc, "-");
 	{
 		Value ret;
 		ScopeChain* gsc;
 		/* current scope, also global */
-		Value* csc = value_new (ps);
-		value_make_object (*csc, object_new (ps));
+		Value* csc = value_new(ps);
+		value_make_object(*csc, object_new(ps));
 
 		/* top this and prototype chain */
 		proto_init (ps, csc);
 
 		/* global funtion, debugger, etc */
-		utils_init (ps, csc, argc, argv);
-		proto_global_init (ps, csc);
-		load_ex_init (ps, csc);
+		utils_init(ps, csc, argc, argv);
+		proto_global_init(ps, csc);
+		load_ex_init(ps, csc);
 
 		/* file system extern init */
-		filesys_init (ps, csc);
+		filesys_init(ps, csc);
 
 		/* initial scope chain, nothing */
-		gsc = scope_chain_new (ps, 0);
+		gsc = scope_chain_new(ps, 0);
 
 		while (argc > 0) {
-			_utils_global_load (ps, argv[fid], gsc, csc, &ret, 0);
+			_utils_global_load(ps, argv[fid], gsc, csc, &ret, 0);
 			fid++;
 			argc--;
 		}
 
-		scope_chain_free (ps, gsc);
-		value_free (ps, csc);
+		scope_chain_free(ps, gsc);
+		value_free(ps, csc);
 	}
 
-	pstate_free (ps);
+	pstate_free(ps);
 	return 0;
 }
 

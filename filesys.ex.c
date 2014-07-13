@@ -38,27 +38,27 @@ typedef struct UdFileobj
 	unichar* mode;
 } UdFileobj;
 
-static void 
-fileobject_erase (void* ps, UdFileobj* fo) 
+static
+void  fileobject_erase (void* ps, UdFileobj* fo) 
 {
 	if (fo->filename) {
-		fclose (fo->fp);
-		unifree (ps, fo->filename);
-		unifree (ps, fo->mode);
+		fclose(fo->fp);
+		unifree(ps, fo->filename);
+		unifree(ps, fo->mode);
 	}
 	fo->filename = NULL;
 }
 
-static void 
-fileobject_free (void* ps, void* data) 
+static
+void fileobject_free(void* ps, void* data) 
 {
 	UdFileobj* fo = data;
-	fileobject_erase (ps, fo);
-	free (fo);
+	fileobject_erase(ps, fo);
+	free(fo);
 }
 
-static int 
-fileobject_istrue (void* data) 
+static
+int fileobject_istrue(void* data) 
 {
 	UdFileobj* fo = data;
 	if (!fo->filename) {
@@ -68,8 +68,8 @@ fileobject_istrue (void* data)
 	}
 }
 
-static int
-fileobject_equ (void* data1, void* data2) 
+static
+int fileobject_equ(void* data1, void* data2) 
 {
 	return (data1 == data2);
 }
@@ -79,201 +79,200 @@ static UserDataReg fileobject = {
 	"fileobject", fileobject_free, fileobject_istrue, fileobject_equ 
 };
 
-static int
-try_open_file (PState* ps, UdFileobj* udf, Value* args)
+static
+int try_open_file(PState* ps, UdFileobj* udf, Value* args)
 {
 	int ret = 0;
-	fileobject_erase (ps, udf);
-	Value* fname = value_object_lookup_array (args, 0, NULL);
+	fileobject_erase(ps, udf);
+	Value* fname = value_object_lookup_array(args, 0, NULL);
 	if (fname && fname->vt == VT_STRING) {
-		Value* vmode = value_object_lookup_array (args, 1, NULL);
+		Value* vmode = value_object_lookup_array(args, 1, NULL);
 		const char *mode = NULL;
 		if (vmode && vmode->vt == VT_STRING) {
-			mode = tochars (ps, vmode->d.str);
+			mode = tochars(ps, vmode->d.str);
 		}
-		char* rmode = c_strdup (ps, mode ? mode : "r");
-		FILE* fp = fopen (tochars (ps, fname->d.str), rmode);
+		char* rmode = c_strdup(ps, mode ? mode : "r");
+		FILE* fp = fopen(tochars (ps, fname->d.str), rmode);
 		if (fp) {
 			udf->fp = fp;
-			udf->filename = unistrdup (ps, fname->d.str);
-			udf->mode = unistrdup_str (ps, rmode);
+			udf->filename = unistrdup(ps, fname->d.str);
+			udf->mode = unistrdup_str(ps, rmode);
 		}else {
 			ret = -1;
 		}
-		c_strfree (ps, rmode);
+		c_strfree(ps, rmode);
 	}
 	return ret;
 }
 
-static int
-File_constructor (PState* ps, Value* args, Value* _this, Value* ret, int asc) 
+static
+int File_constructor(PState* ps, Value* args, Value* _this, Value* ret, int asc) 
 {
 	Value* toacc = NULL;
 	if (asc) {
 		toacc = _this;
 	}else {
-		Object* o = object_new (ps);
+		Object* o = object_new(ps);
 		o->__proto__ = File_prototype;
-		value_make_object (*ret, o);
+		value_make_object(*ret, o);
 		toacc = ret;
 	}
-	UdFileobj* udf = psmalloc (sizeof (UdFileobj));
-	memset (udf, 0, sizeof (UdFileobj));
-	try_open_file (ps, udf, args);
-	userdata_set (ps, toacc->d.obj, global_fileobject_udid, udf);
+	UdFileobj* udf = psmalloc(sizeof (UdFileobj));
+	memset(udf, 0, sizeof(UdFileobj));
+	try_open_file(ps, udf, args);
+	userdata_set(ps, toacc->d.obj, global_fileobject_udid, udf);
 	return 0;
 }
 
-static int
-File_prototype_open (PState* ps, Value* args, Value* _this, Value* ret, int asc)
+static
+int File_prototype_open(PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
-		die ("Can not call File.open as constructor\n");
+		die("Can not call File.open as constructor\n");
 	}
 	if (_this->vt != VT_OBJECT) {
-		bug ("this is not object\n");
+		bug("this is not object\n");
 	}
-	UdFileobj* udf = userdata_get (ps, _this->d.obj, global_fileobject_udid);
+	UdFileobj* udf = userdata_get(ps, _this->d.obj, global_fileobject_udid);
 	if (!udf) {
-		die ("Apply File.open in a non-file object\n");
+		die("Apply File.open in a non-file object\n");
 	}
-	if (try_open_file (ps, udf, args)) {
-		value_make_bool (*ret, 0);
+	if (try_open_file(ps, udf, args)) {
+		value_make_bool(*ret, 0);
 	}
-	value_make_bool (*ret, 1);
+	value_make_bool(*ret, 1);
 	return 0;
 }
 
-static int
-File_prototype_close (PState* ps, Value* args, Value* _this, Value* ret, int asc)
+static
+int File_prototype_close(PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
-		die ("Can not call File.close as constructor\n");
+		die("Can not call File.close as constructor\n");
 	}
 	if (_this->vt != VT_OBJECT) {
-		bug ("this is not object\n");
+		bug("this is not object\n");
 	}
-	UdFileobj* udf = userdata_get (ps, _this->d.obj, global_fileobject_udid);
+	UdFileobj* udf = userdata_get(ps, _this->d.obj, global_fileobject_udid);
 	if (!udf) {
-		die ("Apply File.close in a non-file object\n");
+		die("Apply File.close in a non-file object\n");
 	}
-	fileobject_erase (ps, udf);
-	value_make_bool (*ret, 1);
+	fileobject_erase(ps, udf);
+	value_make_bool(*ret, 1);
 	return 0;
 }
 
-static int
-File_prototype_gets (PState* ps, Value* args, Value* _this, Value* ret, int asc)
+static
+int File_prototype_gets(PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
-		die ("Can not call File.gets as constructor\n");
+		die("Can not call File.gets as constructor\n");
 	}
 	if (_this->vt != VT_OBJECT) {
-		bug ("this is not object\n");
+		bug("this is not object\n");
 	}
-	UdFileobj* udf = userdata_get (ps, _this->d.obj, global_fileobject_udid);
+	UdFileobj* udf = userdata_get(ps, _this->d.obj, global_fileobject_udid);
 	if (!udf) {
-		die ("Apply File.gets in a non-file object\n");
+		die("Apply File.gets in a non-file object\n");
 	}
 	if (!udf->filename) {
-		value_make_undef (*ret);
+		value_make_undef(*ret);
 		return 0;
 	}
 	char buf[2048];
-	if (!fgets (buf, 2046, udf->fp)) {
-		value_make_undef (*ret);
+	if (!fgets(buf, 2046, udf->fp)) {
+		value_make_undef(*ret);
 		return 0;
 	}
 	buf[2046] = 0;
-	char* r = strchr (buf, '\r');
+	char* r = strchr(buf, '\r');
 	if (r) {
 		*r = 0;
 	}else {
-		r = strchr (buf, '\n');
+		r = strchr(buf, '\n');
 		if (r) {
 			*r = 0;
 		}
 	}
-	value_make_string (*ret, unistrdup_str (ps, buf));
+	value_make_string(*ret, unistrdup_str(ps, buf));
 	return 0;
 }
 
-static int
-File_prototype_puts (PState* ps, Value* args, Value* _this, Value* ret, int asc)
+static
+int File_prototype_puts(PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
-		die ("Can not call File.puts as constructor\n");
+		die("Can not call File.puts as constructor\n");
 	}
 	if (_this->vt != VT_OBJECT) {
-		bug ("this is not object\n");
+		bug("this is not object\n");
 	}
-	UdFileobj* udf = userdata_get (ps, _this->d.obj, global_fileobject_udid);
+	UdFileobj* udf = userdata_get(ps, _this->d.obj, global_fileobject_udid);
 	if (!udf) {
-		die ("Apply File.puts in a non-file object\n");
+		die("Apply File.puts in a non-file object\n");
 	}
 	if (!udf->filename) {
-		value_make_bool (*ret, 0);
+		value_make_bool(*ret, 0);
 		return 0;
 	}
-	Value* toput = value_object_lookup_array (args, 0, NULL);
+	Value* toput = value_object_lookup_array(args, 0, NULL);
 	if (!toput) {
-		value_make_bool (*ret, 0);
+		value_make_bool(*ret, 0);
 		return 0;
 	}
-	value_tostring (ps, toput);
-	if (fprintf (udf->fp, "%s\n", tochars (ps, toput->d.str)) < 0) {
-		value_make_bool (*ret, 0);
+	value_tostring(ps, toput);
+	if (fprintf(udf->fp, "%s\n", tochars (ps, toput->d.str)) < 0) {
+		value_make_bool(*ret, 0);
 		return 0;
 	}
-	value_make_bool (*ret, 1);
+	value_make_bool(*ret, 1);
 	return 0;
 }
 
-static int
-File_prototype_eof (PState* ps, Value* args, Value* _this, Value* ret, int asc)
+static
+int File_prototype_eof(PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
-		die ("Can not call File.eof as constructor\n");
+		die("Can not call File.eof as constructor\n");
 	}
 	if (_this->vt != VT_OBJECT) {
-		bug ("this is not object\n");
+		bug("this is not object\n");
 	}
-	UdFileobj* udf = userdata_get (ps, _this->d.obj, global_fileobject_udid);
+	UdFileobj* udf = userdata_get(ps, _this->d.obj, global_fileobject_udid);
 	if (!udf) {
-		die ("Apply File.eof in a non-file object\n");
+		die("Apply File.eof in a non-file object\n");
 	}
-	value_make_bool (*ret, feof (udf->fp));
+	value_make_bool(*ret, feof (udf->fp));
 	return 0;
 }
 
-void 
-filesys_init (PState* ps, Value* global)
+void filesys_init(PState* ps, Value* global)
 {
 	// third, register userdata
-	global_fileobject_udid = userdata_register (ps, &fileobject);
+	global_fileobject_udid = userdata_register(ps, &fileobject);
 	if (global_fileobject_udid < 0) {
-		die ("Can not init file system\n");
+		die("Can not init file system\n");
 	}
 
 	// File.prototype
-	File_prototype = value_object_utils_new_object (ps);
+	File_prototype = value_object_utils_new_object(ps);
 	File_prototype->d.obj->__proto__ = Object_prototype;
-	value_object_utils_insert2 (ps, File_prototype, "open", func_utils_make_func_value (ps, File_prototype_open), 0, 0, 0);
-	value_object_utils_insert2 (ps, File_prototype, "close", func_utils_make_func_value (ps, File_prototype_close), 0, 0, 0);
-	value_object_utils_insert2 (ps, File_prototype, "gets", func_utils_make_func_value (ps, File_prototype_gets), 0, 0, 0);
-	value_object_utils_insert2 (ps, File_prototype, "puts", func_utils_make_func_value (ps, File_prototype_puts), 0, 0, 0);
-	value_object_utils_insert2 (ps, File_prototype, "eof", func_utils_make_func_value (ps, File_prototype_eof), 0, 0, 0);
-	Value* _File = func_utils_make_func_value (ps, File_constructor);
-	value_object_utils_insert2 (ps, _File, "prototype", File_prototype, 0, 0, 0);
+	value_object_utils_insert2(ps, File_prototype, "open", func_utils_make_func_value(ps, File_prototype_open), 0, 0, 0);
+	value_object_utils_insert2(ps, File_prototype, "close", func_utils_make_func_value(ps, File_prototype_close), 0, 0, 0);
+	value_object_utils_insert2(ps, File_prototype, "gets", func_utils_make_func_value(ps, File_prototype_gets), 0, 0, 0);
+	value_object_utils_insert2(ps, File_prototype, "puts", func_utils_make_func_value(ps, File_prototype_puts), 0, 0, 0);
+	value_object_utils_insert2(ps, File_prototype, "eof", func_utils_make_func_value(ps, File_prototype_eof), 0, 0, 0);
+	Value* _File = func_utils_make_func_value(ps, File_constructor);
+	value_object_utils_insert2(ps, _File, "prototype", File_prototype, 0, 0, 0);
 	_File->d.obj->__proto__ = Function_prototype;
-	value_object_utils_insert2 (ps, global, "File", _File, 1, 1, 0);
+	value_object_utils_insert2(ps, global, "File", _File, 1, 1, 0);
 }  
 #else	// #ifdef USE_FILESYS_EX
-  
+
 // no filesystem extern, simply empty init
-void 
-filesys_init (PState* ps, Value* global)
+void filesys_init(PState* ps, Value* global)
 {
 	
 }
 #endif	// #ifdef USE_FILESYS_EX
+

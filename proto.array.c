@@ -8,56 +8,56 @@
 #include "proto.h"
 
 // push
-static int
-arrpto_push (PState* ps, Value* args, Value* _this, Value* ret, int asc)
+static
+int arrpto_push(PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
-		die ("Execute Array.prototype.push as constructor\n");
+		die("Execute Array.prototype.push as constructor\n");
 	}
-	if (_this->vt != VT_OBJECT || !obj_isarray (_this->d.obj)) {
-		value_make_number (*ret, 0);
+	if (_this->vt != VT_OBJECT || !obj_isarray(_this->d.obj)) {
+		value_make_number(*ret, 0);
 		return 0;
 	}
-	int argc = value_get_length (args);
-	int curlen = object_get_length (_this->d.obj);
+	int argc = value_get_length(args);
+	int curlen = object_get_length(_this->d.obj);
 	if (curlen < 0) {
-		object_set_length (ps, _this->d.obj, 0);
+		object_set_length(ps, _this->d.obj, 0);
 	}
 	for (int i=0; i<argc; ++i) {
-		Value* v = value_new (ps);
-		Value* ov = value_object_lookup_array (args, i, NULL);
+		Value* v = value_new(ps);
+		Value* ov = value_object_lookup_array(args, i, NULL);
 		if (!ov) {
-			bug ("Arguments error\n");
+			bug("Arguments error\n");
 		}
-		value_copy (*v, *ov);
-		value_object_utils_insert_array (ps, _this, curlen + i, v, 1, 1, 1);
+		value_copy(*v, *ov);
+		value_object_utils_insert_array(ps, _this, curlen + i, v, 1, 1, 1);
 	}
-	value_make_number (*ret, object_get_length (_this->d.obj));
+	value_make_number(*ret, object_get_length(_this->d.obj));
 	return 0;
 }
 
 // pop
-static int
-arrpto_pop (PState* ps, Value* args, Value* _this, Value* ret, int asc)
+static
+int arrpto_pop(PState* ps, Value* args, Value* _this, Value* ret, int asc)
 {
 	if (asc) {
-		die ("Execute Array.prototype.pop as constructor\n");
+		die("Execute Array.prototype.pop as constructor\n");
 	}
-	if (_this->vt != VT_OBJECT || !obj_isarray (_this->d.obj)) {
-		value_make_number (*ret, 0);
+	if (_this->vt != VT_OBJECT || !obj_isarray(_this->d.obj)) {
+		value_make_number(*ret, 0);
 		return 0;
 	}
-	int i = object_get_length (_this->d.obj) - 1;
+	int i = object_get_length(_this->d.obj) - 1;
 	if (i >= 0) {
-		Value* v = value_object_lookup_array (_this, i, NULL);
+		Value* v = value_object_lookup_array(_this, i, NULL);
 		if (v) {
-			value_copy (*ret, *v);
-			value_erase (*v);	// diff from ecma, not actually delete the key
+			value_copy(*ret, *v);
+			value_erase(*v);	// diff from ecma, not actually delete the key
 		}
-		object_set_length (ps, _this->d.obj, i);
+		object_set_length(ps, _this->d.obj, i);
 		return 0;
 	}
-	value_make_undef (*ret);
+	value_make_undef(*ret);
 	return 0;
 }
 
@@ -71,16 +71,15 @@ static struct st_arrpro_tab
 	{"pop", arrpto_pop}
 };
 
-void
-proto_array_init (PState* ps, Value* global)
+void proto_array_init(PState* ps, Value* global)
 {
 	if (!Array_prototype) {
-		bug ("proto init failed?");
+		bug("proto init failed?");
 	}
-	for (int i=0; i<sizeof (arrpro_funcs) / sizeof (struct st_arrpro_tab); ++i) {
-		Value* n = func_utils_make_func_value (ps, arrpro_funcs[i].func);
+	for (int i=0; i<sizeof(arrpro_funcs) / sizeof(struct st_arrpro_tab); ++i) {
+		Value* n = func_utils_make_func_value(ps, arrpro_funcs[i].func);
 		n->d.obj->__proto__ = Function_prototype;
-		value_object_utils_insert2 (ps, Array_prototype, arrpro_funcs[i].name, n, 0, 0, 0);
+		value_object_utils_insert2(ps, Array_prototype, arrpro_funcs[i].name, n, 0, 0, 0);
 	}
 }
 

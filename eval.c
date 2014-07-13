@@ -260,10 +260,14 @@ static const UNISTR(9) PROTOTYPE = { 9, L"prototype" };
 static const UNISTR(6) CALLEE = { 6, L"callee" };
 static const UNISTR(8) _CALLEE_ = { 8, { 1,'c','a','l','l','e','e', 1 } };
 
-int eval(PState* ps, OpCodes* opcodes, 
-		 ScopeChain* scope, Value* currentScope, 	// scope chain
-		 Value* _this,
-		 Value* vret)
+int eval(
+	PState* ps,
+	OpCodes* opcodes, 
+	ScopeChain* scope,
+	Value* currentScope, 	// scope chain
+	Value* _this,
+	Value* vret
+	)
 {
 	int context_id = ps->_context_id++;
 	OpCode* ip = &opcodes->codes[0];

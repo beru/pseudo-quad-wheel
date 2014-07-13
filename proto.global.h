@@ -4,6 +4,6 @@
 struct Value;
 
 /* Global.prototype */
-void proto_global_init (PState* ps, Value* global, int argc, char** argv);
+void proto_global_init(PState* ps, Value* global, int argc, char** argv);
 
 #endif

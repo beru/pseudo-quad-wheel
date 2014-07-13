@@ -10,57 +10,54 @@
 
 #if USE_UREGEX
 
-regex_t*
-regex_u_new (void* ps, const unsigned short* str, int len, int compflag)
+regex_t* regex_u_new(void* ps, const unsigned short* str, int len, int compflag)
 {
-	regex_t* reg = psmalloc (sizeof (regex_t));
+	regex_t* reg = psmalloc(sizeof(regex_t));
 	if (!reg) {
 		return 0;			// die("Out of memory\n");
 	}
 	reg->interp = ps;
 
-	if (regcomp_u (reg, str, len, compflag)) {
+	if (regcomp_u(reg, str, len, compflag)) {
 		return 0;			// die("Invalid regex string'\n");
 	}
 
 	return reg;
 }
 
-regex_t*
-regex_new (PState* ps, const char* str, int compflag)
+regex_t* regex_new(PState* ps, const char* str, int compflag)
 {
-	regex_t* reg = psmalloc (sizeof (regex_t));
-	int ulen = strlen (str);
-	unsigned short* ustr = psmalloc ((ulen + 1) * 2);
+	regex_t* reg = psmalloc(sizeof(regex_t));
+	int ulen = strlen(str);
+	unsigned short* ustr = psmalloc((ulen + 1) * 2);
 	if (!reg) {
 		psfree(ustr);
 		return 0;			// die("Out of memory\n");
 	}
 	int i;
 	for (i=0; i<ulen; i++) {
-		ustr[i] = (unsigned char) str[i];
+		ustr[i] = (unsigned char)str[i];
 	}
 	ustr[i] = 0;
-	if (regcomp_u (reg, ustr, ulen, compflag)) {
+	if (regcomp_u(reg, ustr, ulen, compflag)) {
 		return 0;			//  die("Invalid regex string'\n");
 	}
 	return reg;
 }
 
-
 #else // #if USE_UREGEX
 
-regex_t*
-regex_new (PState* ps, const char* str, int compflag)
+regex_t* regex_new(PState* ps, const char* str, int compflag)
 {
-	regex_t* reg = malloc (sizeof (regex_t));
+	regex_t* reg = malloc(sizeof(regex_t));
 	if (!reg) {
-		die ("Out of memory\n");
+		die("Out of memory\n");
 	}
-	if (regcomp (reg, str, compflag)) {
-		die ("Invalid regex string'\n");
+	if (regcomp(reg, str, compflag)) {
+		die("Invalid regex string'\n");
 	}
 	return reg;
 }
 
 #endif // #if USE_UREGEX
+

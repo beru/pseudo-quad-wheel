@@ -5,37 +5,35 @@
 #include "pstate.h"
 #include "mempool.h"
 
-static PState*
-pstate_new (void* mc)
+static
+PState* pstate_new(void* mc)
 {
-	PState* ps = mc_malloc (mc, sizeof (PState));
-	memset (ps, 0, sizeof (PState));
+	PState* ps = mc_malloc(mc, sizeof(PState));
+	memset(ps, 0, sizeof(PState));
 	((PState*)ps)->ec.memcontext = mc;
 	return ps;
 }
 
-PState*
-pstate_new_from_file (FILE* fp, memcontext* mc, char* codename)
+PState* pstate_new_from_file(FILE* fp, memcontext* mc, char* codename)
 {
-	PState* ps = pstate_new (mc);
-	Lexer* l= mm_alloc (ps, sizeof (Lexer));
-	memset (l, 0, sizeof (Lexer));
+	PState* ps = pstate_new(mc);
+	Lexer* l= mm_alloc(ps, sizeof (Lexer));
+	memset(l, 0, sizeof(Lexer));
 	ps->lexer = l;
 	l->pstate = ps;
 	l->ltype = LT_FILE;
 	l->d.fp = fp;
 	l->codename = codename ? _strdup(codename): codename;
-	rewind (fp);
+	rewind(fp);
 	l->cur_line = 1;
 	return ps;
 }
 
-PState*
-pstate_new_from_string (const char* str, memcontext* mc, char* codename)
+PState* pstate_new_from_string(const char* str, memcontext* mc, char* codename)
 {
-	PState* ps = pstate_new (mc);
-	Lexer* l= psmalloc (sizeof (Lexer));
-	memset (l, 0, sizeof (Lexer));
+	PState* ps = pstate_new(mc);
+	Lexer* l= psmalloc(sizeof(Lexer));
+	memset(l, 0, sizeof(Lexer));
 	ps->lexer = l;
 	l->pstate = ps;
 	l->ltype = LT_STRING;
@@ -45,48 +43,42 @@ pstate_new_from_string (const char* str, memcontext* mc, char* codename)
 	return ps;
 }
 
-void
-pstate_free (PState* ps)
+void pstate_free(PState* ps)
 {
 	// todo: free opcodes
-	psfree (ps->lexer);
+	psfree(ps->lexer);
 
-	mc_free (((PState*)ps)->ec.memcontext, ps);
+	mc_free(((PState*)ps)->ec.memcontext, ps);
 }
 
-
 /*
-void**
-get_general_pools (void* ps)
+void** get_general_pools(void* ps)
 {
 #if USE_DLMALLOC
 	if (((PState*) ps)->ec == 0) return 0;
-	return (((PState *) ps)->ec.general_pools);
+	return (((PState*)ps)->ec.general_pools);
 #else
 	return 0;
 #endif
 }*/
 
-void*
-_ps_memctx_malloc (void* ps, int size)
+void* _ps_memctx_malloc(void* ps, int size)
 {
 	if (((PState*)ps)->ec.memcontext == 0) return malloc(size);
-	return mc_malloc (((PState *) ps)->ec.memcontext, size);
+	return mc_malloc(((PState *) ps)->ec.memcontext, size);
 }
 
-void
-_ps_memctx_free (void* ps, void* p)
+void _ps_memctx_free(void* ps, void* p)
 {
 	if (((PState*)ps)->ec.memcontext == 0) {
 		free(p);
 		return;
 	}else {
-		mc_free (((PState *) ps)->ec.memcontext, p);
+		mc_free(((PState*)ps)->ec.memcontext, p);
 	}
 }
 
-void
-pstate_svc (void* ps, int i, char* s)
+void pstate_svc(void* ps, int i, char* s)
 {
 	PState* p = (PState*)ps;
 	int sp = p->ec.callstacksp-1;
@@ -125,8 +117,7 @@ pstate_svc (void* ps, int i, char* s)
 }
 
 
-void**
-pstate_get_general_pools (void* ec)
+void** pstate_get_general_pools(void* ec)
 {
 	PState* ps = ec;
 	if (((PState*)ps)->ec.memcontext == 0) {
